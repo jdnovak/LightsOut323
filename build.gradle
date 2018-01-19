@@ -5,6 +5,18 @@ plugins {
     id "jaci.openrio.gradle.GradleRIO" version "2018.01.07"
 }
 
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    test {
+        java {
+            srcDir 'test'
+        }
+    }
+}
+
 def TEAM = 323
 def ROBOT_CLASS = "frc.team323.robot.Robot"
 
@@ -30,6 +42,9 @@ dependencies {
     compile ctre()
     compile navx()
     compile openrio.powerup.matchData()
+    testCompile "com.google.truth:truth:0.39"
+    testCompile 'junit:junit:4.12'
+
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
