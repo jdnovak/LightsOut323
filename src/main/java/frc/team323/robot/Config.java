@@ -10,18 +10,23 @@ public class Config {
   public static int kFrontLeftSteerId = 1;
   public static int kFrontLeftDriveId = 2;
   public static int kFrontLeftSlaveId = 3;
+  public static int kFrontLeftOffset = 0;
 
   public static int kFrontRightSteerId = 4;
   public static int kFrontRightDriveId = 5;
   public static int kFrontRightSlaveId = 6;
+  public static int kFrontRightOffset = 0;
 
   public static int kBackLeftSteerId = 7;
   public static int kBackLeftDriveId = 8;
   public static int kBackLeftSlaveId = 9;
+  public static int kBackLeftOffset = 0;
 
   public static int kBackRightSteerId = 10;
   public static int kBackRightDriveId = 11;
   public static int kBackRightSlaveId = 12;
+  public static int kBackRightOffset = 0;
+
 
   public static Translate2d kFrontLeft = new Translate2d(-10,10);
   public static Translate2d kFrontRight = new Translate2d(10,10);
@@ -41,6 +46,13 @@ public class Config {
     kFrontRight,
     kBackLeft,
     kBackRight
+  };
+
+  public static int[] offsets = {
+    kFrontLeftOffset,
+    kFrontRightOffset,
+    kBackLeftOffset,
+    kBackRightOffset
   };
 
 

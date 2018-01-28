@@ -28,7 +28,7 @@ public class Drive extends Subsystem{
     m_wheelModules = new WheelModule[wheelPos.length];
     // This is a denser bit of code, it grabs the locations and offsets for each wheel and sets up the wheel modules
     for (int i = 0; i<m_wheelModules.length ; i++) {
-      m_wheelModules[i] = new WheelModule(Config.wheelIds[i][0], Config.wheelIds[i][1], Config.wheelIds[i][2], offsets[0], wheelPos[i]);
+      m_wheelModules[i] = new WheelModule(Config.wheelIds[i][0], Config.wheelIds[i][1], Config.wheelIds[i][2], offsets[i], wheelPos[i]);
     }
   }
 

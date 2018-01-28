@@ -8,7 +8,7 @@ import frc.team323.robot.Config;
 import frc.team323.robot.subsystems.Drive;
 
 public class Robot extends TimedRobot {
-    public static final Drive drivetrain = new Drive(Config.wheelPos, null);
+    public static final Drive drivetrain = new Drive(Config.wheelPos, Config.offsets);
     public static final OI oi = new OI();
     @Override
     public void robotInit() { }
