@@ -6,7 +6,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SPI;
 
 
 import com.kauailabs.navx.frc.AHRS;
@@ -24,7 +24,7 @@ public class Drive extends Subsystem{
   private AHRS m_gyro;
 
   public Drive(Translate2d[] wheelPos, int[] offsets) {
-    m_gyro = new AHRS(SerialPort.Port.kMXP);
+    m_gyro = new AHRS(SPI.Port.kMXP);
     m_wheelModules = new WheelModule[wheelPos.length];
     // This is a denser bit of code, it grabs the locations and offsets for each wheel and sets up the wheel modules
     for (int i = 0; i<m_wheelModules.length ; i++) {
