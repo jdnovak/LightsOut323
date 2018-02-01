@@ -28,7 +28,7 @@ public class Drive extends Subsystem{
     m_wheelModules = new WheelModule[wheelPos.length];
     // This is a denser bit of code, it grabs the locations and offsets for each wheel and sets up the wheel modules
     for (int i = 0; i<m_wheelModules.length ; i++) {
-      m_wheelModules[i] = new WheelModule(Config.wheelIds[i][0], Config.wheelIds[i][1], Config.wheelIds[i][2], offsets[i], wheelPos[i]);
+      m_wheelModules[i] = new WheelModule(Config.wheelIds[i][0], Config.wheelIds[i][1], Config.wheelIds[i][2], offsets[i], wheelPos[i], i);
     }
   }
 
@@ -96,11 +96,17 @@ public class Drive extends Subsystem{
     private TalonSRX m_slaveController;
     private Translate2d m_position;
 
-    public WheelModule(int steeringId, int driveId, int slaveId, int offset, Translate2d position) {
+    public WheelModule(int steeringId, int driveId, int slaveId, int offset, Translate2d position, int index) {
 
       m_position = position;
       m_offset = offset;
       m_steeringController  = new TalonSRX(steeringId);
+      m_steeringController.config_kF(Config.kDefaultPIDIndex,Config.k_F[index], Config.kDefaultTimeout);
+      m_steeringController.config_kP(Config.kDefaultPIDIndex,Config.k_P[index], Config.kDefaultTimeout);
+      m_steeringController.config_kI(Config.kDefaultPIDIndex,Config.k_I[index], Config.kDefaultTimeout);
+      m_steeringController.config_kD(Config.kDefaultPIDIndex,Config.k_D[index], Config.kDefaultTimeout);
+      m_steeringController.configMotionCruiseVelocity(Config.CruiseVelocity[index], Config.kDefaultTimeout);
+      m_steeringController.configMotionAcceleration(Config.Acceleration[index], Config.kDefaultTimeout);
       m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
       // Set up the offset for this sensor
       m_steeringController.setSelectedSensorPosition(m_offset, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
