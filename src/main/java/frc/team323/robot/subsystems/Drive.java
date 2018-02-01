@@ -64,20 +64,20 @@ public class Drive extends Subsystem{
       double w_y = y - theta * module.getPosition().getX();
       velocities[i] = Math.sqrt(Math.pow(w_x, 2) + Math.pow(w_y, 2));
       // We track this to normalize as we set the velocities in PercentOutput mode
-      if(Math.abs(velocities[i]) > maxV) {
-        maxV = Math.abs(velocities[i]);
-      }
+      // if(Math.abs(velocities[i]) > maxV) {
+      //   maxV = Math.abs(velocities[i]);
+      // }
       angles[i] = Math.toDegrees(Math.atan2(w_x, w_y));
       i++;
     }
     i = 0;
     // If we're not in PercentOutput mode we don't care about true normalizing
     // We also don't care about normalizing if the maxV is below the max value of 1.0
-    if(ControlMode.PercentOutput != mode || maxV < 1.0){
-      maxV = 1.0;
-    }
+    // if(ControlMode.PercentOutput != mode || maxV < 1.0){
+    //   maxV = 1.0;
+    // }
     for (WheelModule module : m_wheelModules) {
-      module.setSpeed(velocities[i]/maxV);
+      module.setSpeed(velocities[i]);
       module.setAngle(angles[i]);
       i++;
     }
