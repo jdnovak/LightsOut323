@@ -129,7 +129,8 @@ public class Drive extends Subsystem{
     // tell the module to steer to an angle, incorporates offset
     // Mode should be either MotionMagic or Position, others will have undefined behavior
     public void setAngle(double angle, ControlMode mode){
-        m_steeringController.set(mode, angle);
+        double value = 4096 * angle/360.0;
+        m_steeringController.set(mode, (int)value);
     }
 
     // tell module to steer to an angle
