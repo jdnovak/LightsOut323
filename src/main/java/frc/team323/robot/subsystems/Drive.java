@@ -68,7 +68,7 @@ public class Drive extends Subsystem{
       //   maxV = Math.abs(velocities[i]);
       // }
       angles[i] = Math.toDegrees(Math.atan2(w_x, w_y));
-      System.out.printf("%d ", angles[i]);
+      System.out.print(angles[i]);
       i++;
     }
     i = 0;
