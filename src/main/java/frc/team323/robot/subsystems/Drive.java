@@ -81,8 +81,7 @@ public class Drive extends Subsystem{
     // }
     System.out.println(".");
     for (WheelModule module : m_wheelModules) {
-      module.setSpeed(velocities[i]);
-      module.setAngle(angles[i]);
+      module.setSpeedAndAngle(velocities[i], angles[i]);
       i++;
     }
   }
