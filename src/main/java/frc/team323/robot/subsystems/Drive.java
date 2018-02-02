@@ -129,7 +129,7 @@ public class Drive extends Subsystem{
     }
 
     public void setSpeedAndAngle(double speed, double angle) {
-      boolean invert = SwerveUtils.LeastAngleInverted(m_steeringController.getSelectedSensorPosition(0), angle);
+      boolean invert = SwerveUtils.LeastAngleInverted(m_steeringController.getSelectedSensorPosition(0)/4096.0 * 360.0, angle);
       setSpeed(speed * (invert? -1 : 1) );
       setAngle((angle + (invert? 180 : 0)) % 360 );
     }
