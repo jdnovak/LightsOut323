@@ -68,6 +68,7 @@ public class Drive extends Subsystem{
       //   maxV = Math.abs(velocities[i]);
       // }
       angles[i] = Math.toDegrees(Math.atan2(w_x, w_y));
+      System.out.printf("%d ", angles[i]);
       i++;
     }
     i = 0;
@@ -76,6 +77,7 @@ public class Drive extends Subsystem{
     // if(ControlMode.PercentOutput != mode || maxV < 1.0){
     //   maxV = 1.0;
     // }
+    System.out.println(".");
     for (WheelModule module : m_wheelModules) {
       module.setSpeed(velocities[i]);
       module.setAngle(angles[i]);
