@@ -98,11 +98,13 @@ public class Drive extends Subsystem{
     private TalonSRX m_driveController;
     private VictorSPX m_slaveController;
     private Translate2d m_position;
+    private int m_direction;
 
     public WheelModule(int steeringId, int driveId, int slaveId, int offset, Translate2d position, int index) {
 
       m_position = position;
       m_offset = offset;
+      m_direction = Config.Inverted[index] ? -1 : 1;
       m_steeringController  = new TalonSRX(steeringId);
       m_steeringController.config_kF(Config.kDefaultPIDIndex,Config.k_F[index], Config.kDefaultTimeout);
       m_steeringController.config_kP(Config.kDefaultPIDIndex,Config.k_P[index], Config.kDefaultTimeout);
@@ -111,13 +113,14 @@ public class Drive extends Subsystem{
       m_steeringController.configMotionCruiseVelocity(Config.CruiseVelocity[index], Config.kDefaultTimeout);
       m_steeringController.configMotionAcceleration(Config.Acceleration[index], Config.kDefaultTimeout);
       m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
-      m_steeringController.setSensorPhase(Config.Inverted[index]);
+
       // Set up the offset for this sensor
       m_steeringController.setSelectedSensorPosition(m_offset, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
 
 
       m_driveController = new TalonSRX(driveId);
       m_driveController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
+
 
       // This is the second controller, we ALWAYS want it to mirror the drive controller
       m_slaveController = new VictorSPX(slaveId);
@@ -127,7 +130,7 @@ public class Drive extends Subsystem{
 
     // Set open loop speed
     public void setSpeed(double speed){
-      m_driveController.set(ControlMode.PercentOutput, speed);
+      m_driveController.set(ControlMode.PercentOutput, m_direction * speed);
     }
 
     // tell the module to steer to an angle, incorporates offset

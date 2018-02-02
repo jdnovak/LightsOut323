@@ -52,10 +52,10 @@ public class Config {
   public static int kBackRightSteerAcceleration = 5000;
 
 
-  public static boolean kFrontLeftSteerInvert = false;
-  public static boolean kFrontRightSteerInvert = false;
-  public static boolean kBackLeftSteerInvert = false;
-  public static boolean kBackRightSteerInvert = false;
+  public static boolean kFrontLeftDriveInvert = false;
+  public static boolean kFrontRightDriveInvert = false;
+  public static boolean kBackLeftDriveInvert = false;
+  public static boolean kBackRightDriveInvert = false;
 
   public static Translate2d kFrontLeft = new Translate2d(-10,10);
   public static Translate2d kFrontRight = new Translate2d(10,10);
@@ -122,10 +122,10 @@ public class Config {
   };
 
   public static boolean[] Inverted = {
-    kFrontLeftSteerInvert,
-    kFrontRightSteerInvert,
-    kBackLeftSteerInvert,
-    kBackRightSteerInvert
+    kFrontLeftDriveInvert,
+    kFrontRightDriveInvert,
+    kBackLeftDriveInvert,
+    kBackRightDriveInvert
   };
 
 
