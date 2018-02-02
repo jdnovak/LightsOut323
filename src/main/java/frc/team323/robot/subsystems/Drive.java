@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.SPI;
 
 
@@ -95,7 +96,7 @@ public class Drive extends Subsystem{
     private int m_offset = 0;
     private TalonSRX m_steeringController;
     private TalonSRX m_driveController;
-    private TalonSRX m_slaveController;
+    private VictorSPX m_slaveController;
     private Translate2d m_position;
 
     public WheelModule(int steeringId, int driveId, int slaveId, int offset, Translate2d position, int index) {
@@ -110,6 +111,7 @@ public class Drive extends Subsystem{
       m_steeringController.configMotionCruiseVelocity(Config.CruiseVelocity[index], Config.kDefaultTimeout);
       m_steeringController.configMotionAcceleration(Config.Acceleration[index], Config.kDefaultTimeout);
       m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
+      m_steeringController.setSensorPhase(Config.Inverted[index]);
       // Set up the offset for this sensor
       m_steeringController.setSelectedSensorPosition(m_offset, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
 
@@ -118,7 +120,7 @@ public class Drive extends Subsystem{
       m_driveController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
 
       // This is the second controller, we ALWAYS want it to mirror the drive controller
-      m_slaveController = new TalonSRX(slaveId);
+      m_slaveController = new VictorSPX(slaveId);
       m_slaveController.follow(m_driveController);
 
     }
