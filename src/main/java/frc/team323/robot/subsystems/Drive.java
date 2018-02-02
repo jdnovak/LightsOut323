@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 import frc.team323.robot.Config;
 import frc.team323.lib.geom.Translate2d;
+import frc.team323.lib.geom.SwerveUtils;
 
 import frc.team323.robot.commands.OpenLoopDrive;
 
@@ -126,6 +127,12 @@ public class Drive extends Subsystem{
       m_slaveController = new VictorSPX(slaveId);
       m_slaveController.follow(m_driveController);
 
+    }
+
+    public void setSpeedAndAngle(double speed, double angle) {
+      boolean invert = SwerveUtils.LeastAngleInverted(m_steeringController.getSelectedSensorPosition(0), angle);
+      setSpeed(speed * (invert? -1 : 1) );
+      setAngle((angle + (invert? 180 : 0)) % 360 );
     }
 
     // Set open loop speed
