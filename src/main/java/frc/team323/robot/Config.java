@@ -1,6 +1,7 @@
 package frc.team323.robot;
 
 import frc.team323.lib.geom.Translate2d;
+import java.lang.Math;
 
 public class Config {
 
@@ -61,6 +62,8 @@ public class Config {
   public static Translate2d kFrontRight = new Translate2d(10,10);
   public static Translate2d kBackLeft = new Translate2d(-10,-10);
   public static Translate2d kBackRight = new Translate2d(10,-10);
+  public static double kTrackWidth = 20;
+  public static double kTrackLength = 20;
 
   // This stuff is building some matrices for you to link IDs to locations
   public static int[][]  wheelIds = {
@@ -127,7 +130,6 @@ public class Config {
     kBackLeftDriveInvert,
     kBackRightDriveInvert
   };
-
 
 
 }
