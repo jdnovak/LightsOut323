@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SPI;
 
 
@@ -24,6 +25,8 @@ public class Drive extends Subsystem{
 
   private WheelModule[] m_wheelModules;
   private AHRS m_gyro;
+  
+  
 
   public Drive(Translate2d[] wheelPos, int[] offsets) {
     m_gyro = new AHRS(SPI.Port.kMXP);
@@ -47,9 +50,22 @@ public class Drive extends Subsystem{
   }
 
   // Set velocities
-  public void driveVelocity(double x, double y, double theta, ControlMode mode){
+  public void driveVelocity(double X, double Y, double Theta, ControlMode mode){
     double[] velocities = new double[m_wheelModules.length];
     double[] angles = new double[m_wheelModules.length];
+  
+	//  Non-linearize axis inputs
+	double xNL = .75*Math.pow(X,3) + (1-.75)*X;
+	double yNL = .75*Math.pow(Y,3) + (1-.75)*Y;
+	double theta = .1*Math.pow(Theta,3) + (1-1)*Theta;
+	
+	//get gyro data and calculate field-centric offsets	
+	double baseAngle = getHeading(); 
+	double baseRadians = baseAngle * (3.14159 / 180);	
+	
+	double y = yNL * Math.cos(baseRadians) + xNL * Math.sin(baseRadians);
+	double x = -yNL * Math.sin(baseRadians) + xNL * Math.cos(baseRadians); 
+	
     int i = 0;
     double maxV = 0;
     // Here's where the hard math happens to compute IK
@@ -69,6 +85,8 @@ public class Drive extends Subsystem{
       // if(Math.abs(velocities[i]) > maxV) {
       //   maxV = Math.abs(velocities[i]);
       // }
+	  
+	  SmartDashboard.putNumber("Heading",getHeading()); 
       angles[i] = (Math.toDegrees(Math.atan2(w_x, w_y)) + 180) % 360;
       System.out.print(angles[i]);
       i++;
@@ -102,6 +120,7 @@ public class Drive extends Subsystem{
 
     public WheelModule(int steeringId, int driveId, int slaveId, int offset, Translate2d position, int index) {
 
+	  StringBuilder _sb = new StringBuilder();
       m_position = position;
       m_offset = offset;
       m_direction = Config.Inverted[index] ? -1 : 1;
@@ -114,9 +133,14 @@ public class Drive extends Subsystem{
       m_steeringController.configMotionAcceleration(Config.Acceleration[index], Config.kDefaultTimeout);
       m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
 
+	  int absolutePosition = (int)m_steeringController.getSensorCollection().getPulseWidthPosition() & 0xFFF;	
+	  m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,Config.kDefaultPIDIndex, Config.kDefaultTimeout);
+      	  
       // Set up the offset for this sensor
-      m_steeringController.setSelectedSensorPosition(m_offset, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
-
+      m_steeringController.setSelectedSensorPosition(absolutePosition + m_offset, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
+		
+	  SmartDashboard.putNumber("InitialValue" + _sb.append(index), absolutePosition);
+		
 
       m_driveController = new TalonSRX(driveId);
       m_driveController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
@@ -130,7 +154,7 @@ public class Drive extends Subsystem{
 
     public void setSpeedAndAngle(double speed, double angle) {
       boolean invert = SwerveUtils.LeastAngleInverted(m_steeringController.getSelectedSensorPosition(0)/4096.0 * 360.0, angle);
-      setSpeed(speed * (invert? -1 : 1) );
+      setSpeed(speed * (invert? -1 : -1) );
       setAngle((angle + (invert? 180 : 0)) % 360 );
     }
 
