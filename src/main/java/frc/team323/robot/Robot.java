@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 import frc.team323.robot.Config;
 import frc.team323.robot.subsystems.Drive;
@@ -12,8 +13,12 @@ import frc.team323.robot.subsystems.Drive;
 public class Robot extends TimedRobot {
     public static final Drive drivetrain = new Drive(Config.wheelPos, Config.offsets);
     public static final OI oi = new OI();
-	Solenoid Brake= new Solenoid(0);
 	
+	Solenoid trigger= new Solenoid(0);
+	Solenoid brake= new Solenoid(1);
+	Solenoid shifter= new Solenoid(2);	
+	DoubleSolenoid elevatorBack = new DoubleSolenoid(4,5);
+	DoubleSolenoid elevatorForward = new DoubleSolenoid(6,7);
 	
     @Override
     public void robotInit() {
@@ -46,10 +51,37 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
       Scheduler.getInstance().run();
 	  
-	  if(Robot.oi.driverController.getRawButton(1))
-		Brake.set(true);
-	  else
-		Brake.set(false);	
+	if(Robot.oi.driverController.getRawButton(3))
+		trigger.set(true);
+	else
+		trigger.set(false);
+	
+	if(Robot.oi.driverController.getRawButton(4))
+		brake.set(true);
+	else
+		brake.set(false);
+	
+	if(Robot.oi.driverController.getRawButton(5))
+		shifter.set(true);
+	else
+		shifter.set(false);
+		
+	if(Robot.oi.operatorController.getRawButton(1)) {
+		elevatorBack.set(DoubleSolenoid.Value.kReverse);
+		elevatorForward.set(DoubleSolenoid.Value.kReverse);
+	}	
+			
+	else if(Robot.oi.operatorController.getRawButton(2)) {
+		elevatorBack.set(DoubleSolenoid.Value.kForward);
+		elevatorForward.set(DoubleSolenoid.Value.kReverse);
+	}
+	
+	else if(Robot.oi.operatorController.getRawButton(4)) {
+		elevatorBack.set(DoubleSolenoid.Value.kForward);
+		elevatorForward.set(DoubleSolenoid.Value.kForward);
+	}
+	
+	
     }
 
     @Override

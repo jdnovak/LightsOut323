@@ -2,13 +2,16 @@ package frc.team323.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 
+
 public class OI {
 
   public Joystick driverController;
-  public Joystick thetaController;			
+  public Joystick thetaController;
+  public Joystick operatorController;  
 
   public OI(){
     driverController = new Joystick(0);
-	thetaController = new Joystick(1); 
+	thetaController = new Joystick(1);
+	operatorController = new Joystick(2);	
   }
 }
