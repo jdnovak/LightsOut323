@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import frc.team323.robot.Config;
 import frc.team323.robot.subsystems.Drive;
@@ -19,9 +22,14 @@ public class Robot extends TimedRobot {
 	Solenoid shifter= new Solenoid(2);	
 	DoubleSolenoid elevatorBack = new DoubleSolenoid(4,5);
 	DoubleSolenoid elevatorForward = new DoubleSolenoid(6,7);
+	TalonSRX winchMaster = new TalonSRX(13);
+	VictorSPX winchSlave = new VictorSPX(14);
+	
 	
     @Override
     public void robotInit() {
+	
+	winchSlave.follow(winchMaster);
 	
     }
 	@Override
@@ -50,16 +58,19 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
       Scheduler.getInstance().run();
-	  
+	 
+
+		// test code for all pneumatic functions
+		
 	if(Robot.oi.driverController.getRawButton(3))
 		trigger.set(true);
 	else
 		trigger.set(false);
 	
-	if(Robot.oi.driverController.getRawButton(4))
-		brake.set(true);
-	else
-		brake.set(false);
+	//if(Robot.oi.driverController.getRawButton(4))
+	//	brake.set(true);
+	//else
+	//	brake.set(false);
 	
 	if(Robot.oi.driverController.getRawButton(5))
 		shifter.set(true);
@@ -81,6 +92,19 @@ public class Robot extends TimedRobot {
 		elevatorForward.set(DoubleSolenoid.Value.kForward);
 	}
 	
+		// Test code for manual Winch control
+
+			double winchSpeed = Robot.oi.operatorController.getRawAxis(1);
+			if(winchSpeed < -.05 || winchSpeed > .05) {
+				brake.set(true);
+				if(winchSpeed < -.1 || winchSpeed > .1)
+				winchMaster.set(ControlMode.PercentOutput, winchSpeed);
+			}
+			else {
+				brake.set(false);
+				winchMaster.set(ControlMode.PercentOutput, 0);
+				}
+				
 	
     }
 
