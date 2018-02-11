@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import frc.team323.robot.Config;
 import frc.team323.robot.subsystems.Drive;
 
@@ -25,10 +25,11 @@ public class Robot extends TimedRobot {
 	TalonSRX winchMaster = new TalonSRX(13);
 	VictorSPX winchSlave = new VictorSPX(14);
 	
-	
+		
     @Override
     public void robotInit() {
-	
+	winchMaster.setNeutralMode(NeutralMode.Brake);
+	winchSlave.setNeutralMode(NeutralMode.Brake);
 	winchSlave.follow(winchMaster);
 	
     }
@@ -73,9 +74,9 @@ public class Robot extends TimedRobot {
 	//	brake.set(false);
 	
 	if(Robot.oi.driverController.getRawButton(5))
-		shifter.set(true);
-	else
 		shifter.set(false);
+	else
+		shifter.set(true);
 		
 	if(Robot.oi.operatorController.getRawButton(1)) {
 		elevatorBack.set(DoubleSolenoid.Value.kReverse);
