@@ -4,12 +4,15 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import frc.team323.robot.Config;
 import frc.team323.robot.subsystems.Drive;
 
@@ -32,6 +35,16 @@ public class Robot extends TimedRobot {
 	winchSlave.setNeutralMode(NeutralMode.Brake);
 	winchSlave.follow(winchMaster);
 	
+	
+	winchMaster.configSelectedFeedbackSensor((FeedbackDevice.CTRE_MagEncoder_Relative), 0,10);
+	winchMaster.setInverted(true);
+	winchSlave.setInverted(true);
+	winchMaster.config_kF(0, 0.0, 10);
+	winchMaster.config_kP(0, 0.5, 10);
+	winchMaster.config_kI(0, 0.0, 10);
+	winchMaster.config_kD(0, 0.0, 10);
+
+	
     }
 	@Override
 	public void disabledInit() { }
@@ -49,6 +62,9 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledPeriodic() {
       Scheduler.getInstance().run();
+	  double winchInitialPosition = winchMaster.getSelectedSensorPosition(0);
+	  SmartDashboard.putNumber("Winch Position", (winchInitialPosition));
+	  //winchMaster.set(ControlMode.Position, winchInitialPosition);
     }
 
     @Override
@@ -93,19 +109,41 @@ public class Robot extends TimedRobot {
 		elevatorForward.set(DoubleSolenoid.Value.kForward);
 	}
 	
-		// Test code for manual Winch control
-
+		// Test code for Winch control
+		
+			double cockWinchSetPoint = 2048;
+			double zeroWinchSetPoint = 0;
 			double winchSpeed = Robot.oi.operatorController.getRawAxis(1);
-			if(winchSpeed < -.05 || winchSpeed > .05) {
-				brake.set(true);
-				if(winchSpeed < -.1 || winchSpeed > .1)
+				
+		//	Manual Winch Override		
+		if( Robot.oi.operatorController.getRawButton(5)) {	
+			if(winchSpeed < -.1 || winchSpeed > .1) {
 				winchMaster.set(ControlMode.PercentOutput, winchSpeed);
 			}
 			else {
-				brake.set(false);
 				winchMaster.set(ControlMode.PercentOutput, 0);
-				}
+			}
+		}
+		else {
+			if(Robot.oi.driverController.getRawButton(7)) 
+				winchMaster.set(ControlMode.Position, cockWinchSetPoint);
+			if(Robot.oi.driverController.getRawButton(8)) 
+				winchMaster.set(ControlMode.Position, zeroWinchSetPoint);	
+		}
+		
+		// Zero Winch Encoder
+			if(Robot.oi.driverController.getRawButton(12))
+				winchMaster.setSelectedSensorPosition(0, 0, 10);
 				
+		// Winch Brake control 
+		double motorOutput = winchMaster.getMotorOutputPercent();
+		if(motorOutput < -.05 || motorOutput > .01) 
+			brake.set(true);
+		else 
+			brake.set(false);
+		
+		SmartDashboard.putNumber("Winch Position", winchMaster.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("Winch SetPoint", winchMaster.getClosedLoopError(0));
 	
     }
 
