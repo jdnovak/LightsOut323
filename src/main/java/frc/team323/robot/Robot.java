@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DigitalInput;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -25,6 +26,7 @@ public class Robot extends TimedRobot {
 	Solenoid shifter= new Solenoid(2);	
 	DoubleSolenoid elevatorBack = new DoubleSolenoid(4,5);
 	DoubleSolenoid elevatorForward = new DoubleSolenoid(6,7);
+	DigitalInput homeSwitch = new DigitalInput(0);
 	TalonSRX winchMaster = new TalonSRX(13);
 	VictorSPX winchSlave = new VictorSPX(14);
 	
@@ -39,10 +41,18 @@ public class Robot extends TimedRobot {
 	winchMaster.configSelectedFeedbackSensor((FeedbackDevice.CTRE_MagEncoder_Relative), 0,10);
 	winchMaster.setInverted(true);
 	winchSlave.setInverted(true);
-	winchMaster.config_kF(0, 0.0, 10);
+	winchMaster.config_kF(0, .605, 10);
 	winchMaster.config_kP(0, 0.5, 10);
 	winchMaster.config_kI(0, 0.0, 10);
-	winchMaster.config_kD(0, 0.0, 10);
+	winchMaster.config_kD(0, 50.0, 10);
+	winchMaster.configMotionCruiseVelocity(1267, 10);
+	winchMaster.configMotionAcceleration(1267, 10);
+	winchMaster.configNominalOutputForward(0, 10);
+	winchMaster.configNominalOutputReverse(0, 10);
+	winchMaster.configPeakOutputForward(.8, 10);
+	winchMaster.configPeakOutputReverse(-.8, 10);
+	
+	
 
 	
     }
@@ -53,7 +63,10 @@ public class Robot extends TimedRobot {
     public void autonomousInit() { }
 
     @Override
-    public void teleopInit() { }
+    public void teleopInit() {
+	
+	
+	}
 
     @Override
     public void testInit() { }
@@ -63,8 +76,11 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {
       Scheduler.getInstance().run();
 	  double winchInitialPosition = winchMaster.getSelectedSensorPosition(0);
-	  SmartDashboard.putNumber("Winch Position", (winchInitialPosition));
+	  SmartDashboard.putNumber("Winch Initial Position", (winchInitialPosition));
 	  //winchMaster.set(ControlMode.Position, winchInitialPosition);
+	  SmartDashboard.putBoolean("Home Switch", !homeSwitch.get());
+	  
+	  
     }
 
     @Override
@@ -76,6 +92,9 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
       Scheduler.getInstance().run();
 	 
+	double cockWinchSetPoint = 4096;
+	double zeroWinchSetPoint = 0;
+	double winchSetPoint = 0;
 
 		// test code for all pneumatic functions
 		
@@ -111,14 +130,13 @@ public class Robot extends TimedRobot {
 	
 		// Test code for Winch control
 		
-			double cockWinchSetPoint = 2048;
-			double zeroWinchSetPoint = 0;
+			
 			double winchSpeed = Robot.oi.operatorController.getRawAxis(1);
 				
 		//	Manual Winch Override		
-		if( Robot.oi.operatorController.getRawButton(5)) {	
-			if(winchSpeed < -.1 || winchSpeed > .1) {
-				winchMaster.set(ControlMode.PercentOutput, winchSpeed);
+		if( !Robot.oi.operatorController.getRawButton(5)) {	
+			if(winchSpeed < -.2 || winchSpeed > .2) {
+				winchMaster.set(ControlMode.PercentOutput, winchSpeed / 2);
 			}
 			else {
 				winchMaster.set(ControlMode.PercentOutput, 0);
@@ -126,9 +144,10 @@ public class Robot extends TimedRobot {
 		}
 		else {
 			if(Robot.oi.driverController.getRawButton(7)) 
-				winchMaster.set(ControlMode.Position, cockWinchSetPoint);
+				winchSetPoint = cockWinchSetPoint;
 			if(Robot.oi.driverController.getRawButton(8)) 
-				winchMaster.set(ControlMode.Position, zeroWinchSetPoint);	
+				winchSetPoint = zeroWinchSetPoint;
+			winchMaster.set(ControlMode.MotionMagic, winchSetPoint);	
 		}
 		
 		// Zero Winch Encoder
@@ -136,14 +155,19 @@ public class Robot extends TimedRobot {
 				winchMaster.setSelectedSensorPosition(0, 0, 10);
 				
 		// Winch Brake control 
+		double motorVelocity = winchMaster.getSelectedSensorVelocity(0);
 		double motorOutput = winchMaster.getMotorOutputPercent();
-		if(motorOutput < -.05 || motorOutput > .01) 
+		if(motorVelocity < -10 || motorVelocity > 10 || motorOutput < -.05 || motorOutput > .05 ) 
 			brake.set(true);
 		else 
 			brake.set(false);
 		
 		SmartDashboard.putNumber("Winch Position", winchMaster.getSelectedSensorPosition(0));
-		SmartDashboard.putNumber("Winch SetPoint", winchMaster.getClosedLoopError(0));
+		SmartDashboard.putNumber("Winch Position Error", winchMaster.getClosedLoopError(0));
+		SmartDashboard.putNumber("Winch SetPoint", winchSetPoint);
+		SmartDashboard.putNumber("Winch Velocity", winchMaster.getSelectedSensorVelocity(0));
+		SmartDashboard.putBoolean("Home Switch", !homeSwitch.get());
+		
 	
     }
 
