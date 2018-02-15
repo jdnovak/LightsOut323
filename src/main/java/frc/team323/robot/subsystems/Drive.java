@@ -57,7 +57,7 @@ public class Drive extends Subsystem{
 	//  Non-linearize axis inputs
 	double xNL = .75*Math.pow(X,3) + (1-.75)*X;
 	double yNL = .75*Math.pow(Y,3) + (1-.75)*Y;
-	double theta = .1*Math.pow(Theta,3) + (1-1)*Theta;
+	double theta = .3*Math.pow(Theta,3) + (1-.3)*Theta;
 	
 	//get gyro data and calculate field-centric offsets	
 	double baseAngle = getHeading(); 

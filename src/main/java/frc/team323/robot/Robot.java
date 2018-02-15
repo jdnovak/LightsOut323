@@ -42,15 +42,15 @@ public class Robot extends TimedRobot {
 	winchMaster.setInverted(true);
 	winchSlave.setInverted(true);
 	winchMaster.config_kF(0, .605, 10);
-	winchMaster.config_kP(0, 0.5, 10);
+	winchMaster.config_kP(0, 5.0, 10);
 	winchMaster.config_kI(0, 0.0, 10);
-	winchMaster.config_kD(0, 50.0, 10);
-	winchMaster.configMotionCruiseVelocity(1267, 10);
-	winchMaster.configMotionAcceleration(1267, 10);
+	winchMaster.config_kD(0, 0.0, 10);
+	winchMaster.configMotionCruiseVelocity(2500, 10);
+	winchMaster.configMotionAcceleration(1500, 10);
 	winchMaster.configNominalOutputForward(0, 10);
 	winchMaster.configNominalOutputReverse(0, 10);
-	winchMaster.configPeakOutputForward(.8, 10);
-	winchMaster.configPeakOutputReverse(-.8, 10);
+	winchMaster.configPeakOutputForward(1, 10);
+	winchMaster.configPeakOutputReverse(-1, 10);
 	
 	
 
@@ -92,7 +92,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
       Scheduler.getInstance().run();
 	 
-	double cockWinchSetPoint = 4096;
+	double cockWinchSetPoint = 6000;
 	double zeroWinchSetPoint = 0;
 	double winchSetPoint = 0;
 
@@ -157,7 +157,7 @@ public class Robot extends TimedRobot {
 		// Winch Brake control 
 		double motorVelocity = winchMaster.getSelectedSensorVelocity(0);
 		double motorOutput = winchMaster.getMotorOutputPercent();
-		if(motorVelocity < -10 || motorVelocity > 10 || motorOutput < -.05 || motorOutput > .05 ) 
+		if(motorVelocity < -100 || motorVelocity > 100 || motorOutput < -.05 || motorOutput > .05 ) 
 			brake.set(true);
 		else 
 			brake.set(false);
