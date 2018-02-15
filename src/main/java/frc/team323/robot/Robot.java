@@ -29,6 +29,7 @@ public class Robot extends TimedRobot {
 	DigitalInput homeSwitch = new DigitalInput(0);
 	TalonSRX winchMaster = new TalonSRX(13);
 	VictorSPX winchSlave = new VictorSPX(14);
+	VictorSPX pickupWheels = new VictorSPX(15);
 	
 		
     @Override
@@ -127,6 +128,11 @@ public class Robot extends TimedRobot {
 		elevatorBack.set(DoubleSolenoid.Value.kForward);
 		elevatorForward.set(DoubleSolenoid.Value.kForward);
 	}
+	
+	     //  Pickup Wheels
+		 double wheelSpeed = Robot.oi.operatorController.getRawAxis(5) * -1;
+		 pickupWheels.set(ControlMode.PercentOutput,wheelSpeed);
+				
 	
 		// Test code for Winch control
 		
