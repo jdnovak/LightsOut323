@@ -22,8 +22,8 @@ public class Robot extends TimedRobot {
     public static final OI oi = new OI();
 	
 	Solenoid trigger= new Solenoid(0);
-	Solenoid brake= new Solenoid(1);
-	Solenoid shifter= new Solenoid(2);	
+	Solenoid shifter= new Solenoid(1);	
+	Solenoid brake= new Solenoid(2);
 	DoubleSolenoid elevatorBack = new DoubleSolenoid(4,5);
 	DoubleSolenoid elevatorForward = new DoubleSolenoid(6,7);
 	DigitalInput homeSwitch = new DigitalInput(0);
