@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -21,11 +22,13 @@ public class Robot extends TimedRobot {
     public static final Drive drivetrain = new Drive(Config.wheelPos, Config.offsets);
     public static final OI oi = new OI();
 	
+	PowerDistributionPanel pdp= new PowerDistributionPanel(); 
 	Solenoid trigger= new Solenoid(0);
 	Solenoid shifter= new Solenoid(1);	
 	Solenoid brake= new Solenoid(2);
 	DoubleSolenoid elevatorBack = new DoubleSolenoid(4,5);
 	DoubleSolenoid elevatorForward = new DoubleSolenoid(6,7);
+	Solenoid dropPickups = new Solenoid(1,0);
 	DigitalInput homeSwitch = new DigitalInput(0);
 	TalonSRX winchMaster = new TalonSRX(13);
 	VictorSPX winchSlave = new VictorSPX(14);
@@ -104,15 +107,19 @@ public class Robot extends TimedRobot {
 	else
 		trigger.set(false);
 	
-	//if(Robot.oi.driverController.getRawButton(4))
-	//	brake.set(true);
-	//else
-	//	brake.set(false);
+	if(Robot.oi.driverController.getRawButton(4))
+		Robot.drivetrain.zeroheading();
+	
 	
 	if(Robot.oi.driverController.getRawButton(5))
 		shifter.set(false);
 	else
 		shifter.set(true);
+		
+	if(Robot.oi.driverController.getRawButton(9))
+		dropPickups.set(false);
+	else
+		dropPickups.set(true);
 		
 	if(Robot.oi.operatorController.getRawButton(1)) {
 		elevatorBack.set(DoubleSolenoid.Value.kReverse);
@@ -172,8 +179,8 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("Winch Position Error", winchMaster.getClosedLoopError(0));
 		SmartDashboard.putNumber("Winch SetPoint", winchSetPoint);
 		SmartDashboard.putNumber("Winch Velocity", winchMaster.getSelectedSensorVelocity(0));
-		SmartDashboard.putNumber("WinchMaster Amps", winchMaster.getOutputCurrent());
-		SmartDashboard.putNumber("WinchSlave Amps", winchSlave.getOutputCurrent());
+		SmartDashboard.putNumber("WinchMaster Amps", pdp.getCurrent(1));
+		SmartDashboard.putNumber("WinchSlave Amps", pdp.getCurrent(1));
 		SmartDashboard.putBoolean("Home Switch", !homeSwitch.get());
 		
 	
