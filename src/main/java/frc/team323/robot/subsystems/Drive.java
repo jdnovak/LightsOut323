@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.ParamEnum;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -132,6 +133,8 @@ public class Drive extends Subsystem{
       m_steeringController.configMotionCruiseVelocity(Config.CruiseVelocity[index], Config.kDefaultTimeout);
       m_steeringController.configMotionAcceleration(Config.Acceleration[index], Config.kDefaultTimeout);
       m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
+      // Make the sensor not continous
+      m_steeringController.configSetParameter(ParamEnum.eFeedbackNotContinuous, 1, 0x00, 0x00, 0x00);
 
 	  int absolutePosition = (int)m_steeringController.getSensorCollection().getPulseWidthPosition() & 0xFFF;
 	  m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,Config.kDefaultPIDIndex, Config.kDefaultTimeout);
@@ -153,7 +156,7 @@ public class Drive extends Subsystem{
     }
 
     public void setSpeedAndAngle(double speed, double angle) {
-      boolean invert = SwerveUtils.LeastAngleInverted(m_steeringController.getSelectedSensorPosition(0)/4096.0 * 360.0, angle);
+      boolean invert = SwerveUtils.LeastAngleInverted(this.getBoundedAngle(), angle);
       setSpeed(speed * (invert? -1 : 1) );
       setAngle((angle + (invert? 180 : 0)));
     }
@@ -174,6 +177,14 @@ public class Drive extends Subsystem{
     // Mode is always MotionMagic
     public void setAngle(double angle) {
       this.setAngle(angle, ControlMode.MotionMagic);
+    }
+
+    public double getAngle() {
+      return m_steeringController.getSelectedSensorPosition(0)/4096.0 * 360.0;
+    }
+
+    public double getBoundedAngle() {
+      return this.getAngle()%360;
     }
 
     public void setOffset(int offset) {
