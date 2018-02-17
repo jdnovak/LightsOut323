@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -21,11 +22,13 @@ public class Robot extends TimedRobot {
     public static final Drive drivetrain = new Drive(Config.wheelPos, Config.offsets);
     public static final OI oi = new OI();
 	
+	PowerDistributionPanel pdp= new PowerDistributionPanel(); 
 	Solenoid trigger= new Solenoid(0);
 	Solenoid shifter= new Solenoid(1);	
 	Solenoid brake= new Solenoid(2);
 	DoubleSolenoid elevatorBack = new DoubleSolenoid(4,5);
 	DoubleSolenoid elevatorForward = new DoubleSolenoid(6,7);
+	Solenoid dropPickups = new Solenoid(1,0);
 	DigitalInput homeSwitch = new DigitalInput(0);
 	TalonSRX winchMaster = new TalonSRX(13);
 	VictorSPX winchSlave = new VictorSPX(14);
@@ -43,7 +46,7 @@ public class Robot extends TimedRobot {
 	winchMaster.setInverted(true);
 	winchSlave.setInverted(true);
 	winchMaster.config_kF(0, .605, 10);
-	winchMaster.config_kP(0, 5.0, 10);
+	winchMaster.config_kP(0, 8.0, 10);
 	winchMaster.config_kI(0, 0.0, 10);
 	winchMaster.config_kD(0, 0.0, 10);
 	winchMaster.configMotionCruiseVelocity(2500, 10);
@@ -93,7 +96,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
       Scheduler.getInstance().run();
 	 
-	double cockWinchSetPoint = 6000;
+	double cockWinchSetPoint = 8000;
 	double zeroWinchSetPoint = 0;
 	double winchSetPoint = 0;
 
@@ -104,15 +107,19 @@ public class Robot extends TimedRobot {
 	else
 		trigger.set(false);
 	
-	//if(Robot.oi.driverController.getRawButton(4))
-	//	brake.set(true);
-	//else
-	//	brake.set(false);
+	if(Robot.oi.driverController.getRawButton(4))
+		Robot.drivetrain.zeroheading();
+	
 	
 	if(Robot.oi.driverController.getRawButton(5))
 		shifter.set(false);
 	else
 		shifter.set(true);
+		
+	if(Robot.oi.driverController.getRawButton(9))
+		dropPickups.set(false);
+	else
+		dropPickups.set(true);
 		
 	if(Robot.oi.operatorController.getRawButton(1)) {
 		elevatorBack.set(DoubleSolenoid.Value.kReverse);
@@ -163,7 +170,7 @@ public class Robot extends TimedRobot {
 		// Winch Brake control 
 		double motorVelocity = winchMaster.getSelectedSensorVelocity(0);
 		double motorOutput = winchMaster.getMotorOutputPercent();
-		if(motorVelocity < -100 || motorVelocity > 100 || motorOutput < -.05 || motorOutput > .05 ) 
+		if( motorOutput < -.05 || motorOutput > .05 ) 
 			brake.set(true);
 		else 
 			brake.set(false);
@@ -172,6 +179,8 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("Winch Position Error", winchMaster.getClosedLoopError(0));
 		SmartDashboard.putNumber("Winch SetPoint", winchSetPoint);
 		SmartDashboard.putNumber("Winch Velocity", winchMaster.getSelectedSensorVelocity(0));
+		SmartDashboard.putNumber("WinchMaster Amps", pdp.getCurrent(1));
+		SmartDashboard.putNumber("WinchSlave Amps", pdp.getCurrent(1));
 		SmartDashboard.putBoolean("Home Switch", !homeSwitch.get());
 		
 	

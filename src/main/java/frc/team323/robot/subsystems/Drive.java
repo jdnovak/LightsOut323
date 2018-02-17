@@ -58,7 +58,7 @@ public class Drive extends Subsystem{
 	//  Non-linearize axis inputs
 	double xNL = .75*Math.pow(X,3) + (1-.75)*X;
 	double yNL = .75*Math.pow(Y,3) + (1-.75)*Y;
-	double theta = .3*Math.pow(Theta,3) + (1-.3)*Theta;
+	double theta = .8 *Math.pow(Theta,3) + (1-.8)*Theta;
 
 	//get gyro data and calculate field-centric offsets
 	double baseAngle = getHeading();
@@ -156,8 +156,13 @@ public class Drive extends Subsystem{
     }
 
     public void setSpeedAndAngle(double speed, double angle) {
+<<<<<<< HEAD
       boolean invert = SwerveUtils.LeastAngleInverted(this.getBoundedAngle(), angle);
       setSpeed(speed * (invert? -1 : 1) );
+=======
+      boolean invert = SwerveUtils.LeastAngleInverted(m_steeringController.getSelectedSensorPosition(0)/4096.0 * 360.0, angle);
+      setSpeed(speed * (invert? 1 : -1) );
+>>>>>>> c075306f716d36636cc088da14638639438a1a9a
       setAngle((angle + (invert? 180 : 0)));
     }
 
