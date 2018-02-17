@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
 	winchMaster.setInverted(true);
 	winchSlave.setInverted(true);
 	winchMaster.config_kF(0, .605, 10);
-	winchMaster.config_kP(0, 5.0, 10);
+	winchMaster.config_kP(0, 8.0, 10);
 	winchMaster.config_kI(0, 0.0, 10);
 	winchMaster.config_kD(0, 0.0, 10);
 	winchMaster.configMotionCruiseVelocity(2500, 10);
@@ -93,7 +93,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
       Scheduler.getInstance().run();
 	 
-	double cockWinchSetPoint = 6000;
+	double cockWinchSetPoint = 8000;
 	double zeroWinchSetPoint = 0;
 	double winchSetPoint = 0;
 
@@ -163,7 +163,7 @@ public class Robot extends TimedRobot {
 		// Winch Brake control 
 		double motorVelocity = winchMaster.getSelectedSensorVelocity(0);
 		double motorOutput = winchMaster.getMotorOutputPercent();
-		if(motorVelocity < -100 || motorVelocity > 100 || motorOutput < -.05 || motorOutput > .05 ) 
+		if( motorOutput < -.05 || motorOutput > .05 ) 
 			brake.set(true);
 		else 
 			brake.set(false);
@@ -172,6 +172,8 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("Winch Position Error", winchMaster.getClosedLoopError(0));
 		SmartDashboard.putNumber("Winch SetPoint", winchSetPoint);
 		SmartDashboard.putNumber("Winch Velocity", winchMaster.getSelectedSensorVelocity(0));
+		SmartDashboard.putNumber("WinchMaster Amps", winchMaster.getOutputCurrent());
+		SmartDashboard.putNumber("WinchSlave Amps", winchSlave.getOutputCurrent());
 		SmartDashboard.putBoolean("Home Switch", !homeSwitch.get());
 		
 	
