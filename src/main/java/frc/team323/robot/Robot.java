@@ -26,9 +26,11 @@ public class Robot extends TimedRobot {
 	Solenoid trigger= new Solenoid(0);
 	Solenoid shifter= new Solenoid(1);	
 	Solenoid brake= new Solenoid(2);
+	
+	Solenoid extendPickups = new Solenoid(3);
 	DoubleSolenoid elevatorBack = new DoubleSolenoid(4,5);
 	DoubleSolenoid elevatorForward = new DoubleSolenoid(6,7);
-	Solenoid dropPickups = new Solenoid(1,0);
+	Solenoid closePickups = new Solenoid(1,0);
 	DigitalInput homeSwitch = new DigitalInput(0);
 	TalonSRX winchMaster = new TalonSRX(13);
 	VictorSPX winchSlave = new VictorSPX(14);
@@ -46,9 +48,9 @@ public class Robot extends TimedRobot {
 	winchMaster.setInverted(true);
 	winchSlave.setInverted(true);
 	winchMaster.config_kF(0, .605, 10);
-	winchMaster.config_kP(0, 8.0, 10);
+	winchMaster.config_kP(0, 5.0, 10);
 	winchMaster.config_kI(0, 0.0, 10);
-	winchMaster.config_kD(0, 0.0, 10);
+	winchMaster.config_kD(0,250.0, 10);
 	winchMaster.configMotionCruiseVelocity(2500, 10);
 	winchMaster.configMotionAcceleration(1500, 10);
 	winchMaster.configNominalOutputForward(0, 10);
@@ -100,16 +102,16 @@ public class Robot extends TimedRobot {
 	double zeroWinchSetPoint = 0;
 	double winchSetPoint = 0;
 
-		// test code for all pneumatic functions
+	// zero Gyro Heading
+	if(Robot.oi.driverController.getRawButton(6))
+		Robot.drivetrain.zeroheading();
 		
+		
+	// test code for all pneumatic functions	
 	if(Robot.oi.driverController.getRawButton(3))
 		trigger.set(true);
 	else
 		trigger.set(false);
-	
-	if(Robot.oi.driverController.getRawButton(4))
-		Robot.drivetrain.zeroheading();
-	
 	
 	if(Robot.oi.driverController.getRawButton(5))
 		shifter.set(false);
@@ -117,9 +119,14 @@ public class Robot extends TimedRobot {
 		shifter.set(true);
 		
 	if(Robot.oi.driverController.getRawButton(9))
-		dropPickups.set(false);
+		closePickups.set(true);
 	else
-		dropPickups.set(true);
+		closePickups.set(false);
+		
+	if(Robot.oi.driverController.getRawButton(10))
+		extendPickups.set(true);
+	else
+		extendPickups.set(false);	
 		
 	if(Robot.oi.operatorController.getRawButton(1)) {
 		elevatorBack.set(DoubleSolenoid.Value.kReverse);
@@ -160,7 +167,7 @@ public class Robot extends TimedRobot {
 				winchSetPoint = cockWinchSetPoint;
 			if(Robot.oi.driverController.getRawButton(8)) 
 				winchSetPoint = zeroWinchSetPoint;
-			winchMaster.set(ControlMode.MotionMagic, winchSetPoint);	
+			winchMaster.set(ControlMode.Position, winchSetPoint);	
 		}
 		
 		// Zero Winch Encoder
