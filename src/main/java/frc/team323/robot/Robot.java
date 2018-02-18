@@ -98,7 +98,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
       Scheduler.getInstance().run();
 	 
-	double cockWinchSetPoint = 8000;
+	double cockWinchSetPoint = 8500;
 	double zeroWinchSetPoint = 0;
 	double winchSetPoint = 0;
 
@@ -107,7 +107,7 @@ public class Robot extends TimedRobot {
 		Robot.drivetrain.zeroheading();
 		
 		
-	// test code for all pneumatic functions	
+	// Driver Fire Button 	
 	if(Robot.oi.driverController.getRawButton(3))
 		trigger.set(true);
 	else
@@ -118,35 +118,61 @@ public class Robot extends TimedRobot {
 	else
 		shifter.set(true);
 		
-	if(Robot.oi.driverController.getRawButton(9))
-		closePickups.set(true);
-	else
-		closePickups.set(false);
+	//if(Robot.oi.driverController.getRawButton(9))
+	//	closePickups.set(true);
+	//else
+	//	closePickups.set(false);
 		
-	if(Robot.oi.driverController.getRawButton(10))
-		extendPickups.set(true);
-	else
-		extendPickups.set(false);	
+	//if(Robot.oi.driverController.getRawButton(10))
+	//	extendPickups.set(true);
+	//else
+	//	extendPickups.set(false);	
 		
 	if(Robot.oi.operatorController.getRawButton(1)) {
-		elevatorBack.set(DoubleSolenoid.Value.kReverse);
-		elevatorForward.set(DoubleSolenoid.Value.kReverse);
-	}	
-			
+		Config.tiltForward = true;
+		Config.tiltUp = false;
+		Config.tiltBack = false;
+		}
+	
 	else if(Robot.oi.operatorController.getRawButton(2)) {
-		elevatorBack.set(DoubleSolenoid.Value.kForward);
-		elevatorForward.set(DoubleSolenoid.Value.kReverse);
+		Config.tiltForward = false;
+		Config.tiltUp = true;
+		Config.tiltBack = false;
 	}
 	
 	else if(Robot.oi.operatorController.getRawButton(4)) {
-		elevatorBack.set(DoubleSolenoid.Value.kForward);
-		elevatorForward.set(DoubleSolenoid.Value.kForward);
+		Config.tiltForward = false;
+		Config.tiltUp = false;
+		Config.tiltBack = true;
 	}
 	
-	     //  Pickup Wheels
-		 double wheelSpeed = Robot.oi.operatorController.getRawAxis(5) * -1;
-		 pickupWheels.set(ControlMode.PercentOutput,wheelSpeed);
-				
+	
+	// Operator Pickup Sequence
+		
+	     if (Robot.oi.operatorController.getRawButton(6) && !Config.pickupOS) {
+		 	 Config.tiltForward = true; 
+			 Config.tiltUp = false;
+			 Config.tiltBack = false;
+			 Config.extendPickupsToggle = true;
+			 Config.closePickupsToggle = true;
+			 Config.pickupOS = true;
+			 Config.notpickupOS = false;
+		}
+		double rightTrigger = Robot.oi.operatorController.getRawAxis(3);
+		if(rightTrigger > 0.1 && Config.pickupOS && !Config.notpickupOS) {
+			Config.tiltForward = false;
+			Config.tiltUp = true;
+			Config.extendPickupsToggle = false;
+			Config.closePickupsToggle = false;
+			Config.notpickupOS = true;
+			Config.pickupOS = false;
+		}	
+			if (Robot.oi.driverController.getTrigger())
+				pickupWheels.set(ControlMode.PercentOutput,-1.0);
+			else {	
+			double wheelSpeed = Robot.oi.operatorController.getRawAxis(5) * -1;
+			pickupWheels.set(ControlMode.PercentOutput,wheelSpeed);
+			}	
 	
 		// Test code for Winch control
 		
@@ -181,6 +207,33 @@ public class Robot extends TimedRobot {
 			brake.set(true);
 		else 
 			brake.set(false);
+			
+		// Elevator Tilt commands	
+		if(Config.tiltBack)	{
+			elevatorBack.set(DoubleSolenoid.Value.kReverse);
+			elevatorForward.set(DoubleSolenoid.Value.kReverse);
+			}
+		if(Config.tiltUp)	{
+			elevatorBack.set(DoubleSolenoid.Value.kForward);
+			elevatorForward.set(DoubleSolenoid.Value.kReverse);
+			}
+
+		if(Config.tiltForward)	{
+			elevatorBack.set(DoubleSolenoid.Value.kForward);
+			elevatorForward.set(DoubleSolenoid.Value.kForward);
+			}
+
+		if(Config.closePickupsToggle)
+			closePickups.set(false);
+		else
+			closePickups.set(true);
+			
+		if(Config.extendPickupsToggle)
+			extendPickups.set(true);
+		else
+			extendPickups.set(false);	
+		
+		
 		
 		SmartDashboard.putNumber("Winch Position", winchMaster.getSelectedSensorPosition(0));
 		SmartDashboard.putNumber("Winch Position Error", winchMaster.getClosedLoopError(0));

@@ -131,5 +131,13 @@ public class Config {
     kBackRightDriveInvert
   };
 
+	public static boolean pickupOS;
+	public static boolean notpickupOS;
+	
+	public static boolean tiltForward;
+	public static boolean tiltUp;
+	public static boolean tiltBack;
+	public static boolean closePickupsToggle;
+	public static boolean extendPickupsToggle;
 
 }

@@ -142,13 +142,13 @@ public class Drive extends Subsystem{
       
 
 	  int absolutePosition = (int)m_steeringController.getSensorCollection().getPulseWidthPosition() & 0xFFF;
-	  m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,Config.kDefaultPIDIndex, Config.kDefaultTimeout);
+	  m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
 
       // Set up the offset for this sensor
       m_steeringController.setSelectedSensorPosition(absolutePosition + m_offset, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
 	  
 	  // Make the sensor not continuous
-      m_steeringController.configSetParameter(ParamEnum.eFeedbackNotContinuous, 1, 0x00, 0x00, 0x00);
+      //m_steeringController.configSetParameter(ParamEnum.eFeedbackNotContinuous, 1, 0x00, 0x00, 0x00);
 
 	  SmartDashboard.putNumber("InitialValue" + _sb.append(index), absolutePosition);
 
@@ -166,7 +166,7 @@ public class Drive extends Subsystem{
     public void setSpeedAndAngle(double speed, double angle) {
       boolean invert = SwerveUtils.LeastAngleInverted(this.getBoundedAngle(), angle);
       setSpeed(speed * (invert? 1 : -1) );
-      setAngle((angle + (invert? 180 : 0)));
+      setAngle((angle + (invert? 0 : 0)));
 	  
     }
 
