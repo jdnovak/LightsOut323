@@ -52,7 +52,7 @@ public class Drive extends Subsystem{
 
   // Set velocities
   public void driveVelocity(double X, double Y, double Theta, ControlMode mode){
-  
+
 	StringBuilder _sb = new StringBuilder();
     double[] velocities = new double[m_wheelModules.length];
     double[] angles = new double[m_wheelModules.length];
@@ -88,15 +88,15 @@ public class Drive extends Subsystem{
       // if(Math.abs(velocities[i]) > maxV) {
       //   maxV = Math.abs(velocities[i]);
       // }
-  
+
       angles[i] = (Math.toDegrees(Math.atan2(w_x, w_y)) + 180) % 360;
-      
+
 	  SmartDashboard.putNumber("WheelHeading " + _sb.append(i), angles[i]);
 	  //System.out.print(angles[i]);
       i++;
-	  
+
 	  SmartDashboard.putNumber("Heading",getHeading());
-	  
+
     }
     i = 0;
     // If we're not in PercentOutput mode we don't care about true normalizing
@@ -138,15 +138,15 @@ public class Drive extends Subsystem{
       m_steeringController.config_kD(Config.kDefaultPIDIndex,Config.k_D[index], Config.kDefaultTimeout);
       m_steeringController.configMotionCruiseVelocity(Config.CruiseVelocity[index], Config.kDefaultTimeout);
       m_steeringController.configMotionAcceleration(Config.Acceleration[index], Config.kDefaultTimeout);
-      m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
-      
+      // m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
+
 
 	  int absolutePosition = (int)m_steeringController.getSensorCollection().getPulseWidthPosition() & 0xFFF;
 	  m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
 
       // Set up the offset for this sensor
       m_steeringController.setSelectedSensorPosition(absolutePosition + m_offset, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
-	  
+
 	  // Make the sensor not continuous
       //m_steeringController.configSetParameter(ParamEnum.eFeedbackNotContinuous, 1, 0x00, 0x00, 0x00);
 
@@ -164,10 +164,10 @@ public class Drive extends Subsystem{
     }
 
     public void setSpeedAndAngle(double speed, double angle) {
-      boolean invert = SwerveUtils.LeastAngleInverted(this.getBoundedAngle(), angle);
-      setSpeed(speed * (invert? 1 : -1) );
-      setAngle((angle + (invert? 0 : 0)));
-	  
+      double[] command = SwerveUtils.ComputeAbsoluteAngle(this.getAngle(), angle);
+      setSpeed(speed * command[1]);
+      setAngle(command[0]);
+
     }
 
     // Set open loop speed
