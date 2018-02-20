@@ -60,14 +60,14 @@ public class Drive extends Subsystem{
 	//  Non-linearize axis inputs
 	double xNL = .75*Math.pow(X,3) + (1-.75)*X;
 	double yNL = .75*Math.pow(Y,3) + (1-.75)*Y;
-	double theta = .8 *Math.pow(Theta,3) + (1-.8)*Theta;
+	double theta = .9 *Math.pow(Theta,3) + (1-.9)*Theta;
 
 	//get gyro data and calculate field-centric offsets
 	double baseAngle = getHeading();
 	double baseRadians = baseAngle * (3.14159 / 180);
 
 	double y = yNL * Math.cos(baseRadians) + xNL * Math.sin(baseRadians);
-	double x = -yNL * Math.sin(baseRadians) + xNL * Math.cos(baseRadians);
+	double x = yNL * Math.sin(baseRadians) + xNL * Math.cos(baseRadians);
 
     int i = 0;
     double maxV = 0;
@@ -104,7 +104,7 @@ public class Drive extends Subsystem{
     // if(ControlMode.PercentOutput != mode || maxV < 1.0){
     //   maxV = 1.0;
     // }
-    System.out.println(".");
+    //System.out.println(".");
     for (WheelModule module : m_wheelModules) {
       module.setSpeedAndAngle(velocities[i], angles[i]);
       i++;

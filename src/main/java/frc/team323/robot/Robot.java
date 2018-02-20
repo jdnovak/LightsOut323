@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Timer;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -22,6 +23,7 @@ public class Robot extends TimedRobot {
     public static final Drive drivetrain = new Drive(Config.wheelPos, Config.offsets);
     public static final OI oi = new OI();
 	
+	Timer launchTimer = new Timer();
 	PowerDistributionPanel pdp= new PowerDistributionPanel(); 
 	Solenoid trigger= new Solenoid(0);
 	Solenoid shifter= new Solenoid(1);	
@@ -61,8 +63,8 @@ public class Robot extends TimedRobot {
 	
 	winchMaster.configNominalOutputForward(0, 10);
 	winchMaster.configNominalOutputReverse(0, 10);
-	winchMaster.configPeakOutputForward(1, 10);
-	winchMaster.configPeakOutputReverse(-1, 10);
+	winchMaster.configPeakOutputForward(.8, 10);
+	winchMaster.configPeakOutputReverse(-.8, 10);
 	
 	
 
@@ -76,7 +78,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-	
+	Config.launchSequence = 0;
 	
 	}
 
@@ -170,7 +172,8 @@ public class Robot extends TimedRobot {
 		double rightTrigger = Robot.oi.operatorController.getRawAxis(3);
 		if(rightTrigger > 0.1 && Config.pickupOS && !Config.notpickupOS) {
 			Config.tiltForward = false;
-			Config.tiltUp = true;
+			Config.tiltUp = false;
+			 Config.tiltBack = true;
 			Config.extendPickupsToggle = false;
 			Config.closePickupsToggle = false;
 			Config.notpickupOS = true;
@@ -185,10 +188,10 @@ public class Robot extends TimedRobot {
 			pickupWheels.set(ControlMode.PercentOutput,wheelSpeed);
 			}	
 	
-		// Test code for Winch control
+		// Code for Winch control
 		
-		// Run winch down to trigger
-		if(Robot.oi.operatorController.getPOV() == 0) {
+		// Home Routine -- Run winch down to bottom, set trigger, and zero position
+		if(Robot.oi.operatorController.getRawButton(7)) {
 			Config.triggerClosed = false;
 				if(homeSwitch.get())
 				winchMaster.set(ControlMode.PercentOutput, -.1);
@@ -200,39 +203,67 @@ public class Robot extends TimedRobot {
 				}
 			}
 			
-			// Run Launcivator in Elevator Mode 
+			// Zero Winch Encoder
+			if(Robot.oi.driverController.getRawButton(12))
+				winchMaster.setSelectedSensorPosition(0, 0, 10);
+				
+			//	Manual Winch Override	
+			double winchSpeed = Robot.oi.operatorController.getRawAxis(1);
+		if( Robot.oi.operatorController.getRawButton(5)) {
+				winchMaster.selectProfileSlot(0,0);
+				winchMaster.set(ControlMode.PercentOutput, winchSpeed * .8);
+			}
+			
+			// Run Elevator mode of Launchivator 
 			double leftTrigger = Robot.oi.operatorController.getRawAxis(2);
 			if(leftTrigger > .8){
 			Config.triggerClosed = false;
-				//winchMaster.selectProfileSlot(0,0);	
+				winchMaster.selectProfileSlot(0,0);	
 				winchMaster.set(ControlMode.MotionMagic, 11500);
 			}	
 			if(leftTrigger > .2 && leftTrigger < .8){
 			Config.triggerClosed = false;
-				//winchMaster.selectProfileSlot(0,0);	
+				winchMaster.selectProfileSlot(0,0);	
 				winchMaster.set(ControlMode.MotionMagic, 0);
 			}
 				
-		//	Manual Winch Override	
-			double winchSpeed = Robot.oi.operatorController.getRawAxis(1);
-		if( Robot.oi.operatorController.getRawButton(5)) {	
-				winchMaster.set(ControlMode.PercentOutput, winchSpeed / 2);
+			//	Run Launch Mode of Launchivator
+			if(Robot.oi.operatorController.getPOV() == 0) { 
+				if(!homeSwitch.get() && Config.launchSequence == 0) {
+					Config.triggerClosed = true;
+					Config.launchSequence = 1;
+					}
+				if(Config.launchSequence == 1) {	
+					launchTimer.reset();
+					launchTimer.start();	
+					winchMaster.selectProfileSlot(1,0);
+					winchSetPoint = 9000;
+					winchMaster.set(ControlMode.Position, winchSetPoint);
+					Config.launchSequence = 2;
+					}
+				if(Config.launchSequence == 2 && launchTimer.get() > 2) {
+					Config.lockBrake = true;
+					Config.launchSequence = 3;
+					}
+				if(Config.launchSequence == 3 && launchTimer.get() > 2.5) {	
+					winchMaster.set(ControlMode.PercentOutput, 0);
+					}
 			}
-	//	else {
-	//					
-	//		if(Robot.oi.driverController.getRawButton(8)) 
-	//			winchSetPoint = 9000;
-	//		winchMaster.set(ControlMode.Position, winchSetPoint);	
-	//	}
+			else if(Config.launchSequence > 0) {
+					Config.launchSequence = 0;
+					winchMaster.set(ControlMode.PercentOutput, 0);
+					Config.lockBrake = false;
+					
+			}
+			
+				
+			
 		
-		// Zero Winch Encoder
-			if(Robot.oi.driverController.getRawButton(12))
-				winchMaster.setSelectedSensorPosition(0, 0, 10);
 				
 		// Winch Brake control 
 		double motorVelocity = winchMaster.getSelectedSensorVelocity(0);
 		double motorOutput = winchMaster.getMotorOutputPercent();
-		if( motorOutput < -.05 || motorOutput > .05 ) 
+		if( motorOutput < -.05 || motorOutput > .05 && !Config.lockBrake ) 
 			brake.set(true);
 		else 
 			brake.set(false);
@@ -277,6 +308,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("WinchSlave Amps", pdp.getCurrent(1));
 		SmartDashboard.putBoolean("Home Switch", !homeSwitch.get());
 		SmartDashboard.putBoolean("TriggerClosed", Config.triggerClosed);
+		SmartDashboard.putBoolean("BrakeLock", Config.lockBrake);
 		SmartDashboard.putNumber("POV", Robot.oi.operatorController.getPOV());
 		SmartDashboard.putNumber("LeftTrigger", leftTrigger);
 	

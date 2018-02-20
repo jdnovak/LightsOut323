@@ -141,10 +141,12 @@ public class Config {
 	public static boolean tiltBack;
 	public static boolean closePickupsToggle;
 	public static boolean extendPickupsToggle;
+	public static boolean lockBrake;
 	
 	public static boolean triggerClosed; 
 	public static int launchPIDEnable;	
 	public static int cockLauncher;
+	public static int launchSequence;
 	
 
 }
