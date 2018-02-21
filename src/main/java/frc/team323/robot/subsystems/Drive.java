@@ -58,8 +58,8 @@ public class Drive extends Subsystem{
     double[] angles = new double[m_wheelModules.length];
 
 	//  Non-linearize axis inputs
-	double xNL = .75*Math.pow(X,3) + (1-.75)*X;
-	double yNL = .75*Math.pow(Y,3) + (1-.75)*Y;
+	double xNL = .5*Math.pow(X,3) + (1-.5)*X;
+	double yNL = .5*Math.pow(Y,3) + (1-.5)*Y;
 	double theta = .9 *Math.pow(Theta,3) + (1-.9)*Theta;
 
 	//get gyro data and calculate field-centric offsets

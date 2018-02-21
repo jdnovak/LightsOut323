@@ -237,7 +237,7 @@ public class Robot extends TimedRobot {
 					launchTimer.reset();
 					launchTimer.start();	
 					winchMaster.selectProfileSlot(1,0);
-					winchSetPoint = 9000;
+					winchSetPoint = 9800;
 					winchMaster.set(ControlMode.Position, winchSetPoint);
 					Config.launchSequence = 2;
 					}
