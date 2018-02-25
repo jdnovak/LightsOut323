@@ -63,7 +63,7 @@ public class Drive extends Subsystem{
 	double theta = .9 *Math.pow(Theta,3) + (1-.9)*Theta;
 
 	//get gyro data and calculate field-centric offsets
-	double baseAngle = getHeading();
+	double baseAngle = 360. - getHeading();
 	double baseRadians = baseAngle * (3.14159 / 180);
 
 	double y = yNL * Math.cos(baseRadians) + xNL * Math.sin(baseRadians);
