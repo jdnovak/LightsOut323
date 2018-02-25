@@ -5,6 +5,8 @@ import java.lang.Math;
 
 public class Config {
 
+  public static int lockButton = 1;
+
   public static int kDefaultTimeout = 10;
   public static int kDefaultPIDIndex = 0;
 
@@ -132,21 +134,21 @@ public class Config {
   };
 
   //Robot Function global flags
-  
+
 	public static boolean pickupOS;
 	public static boolean notpickupOS;
-	
+
 	public static boolean tiltForward;
 	public static boolean tiltUp;
 	public static boolean tiltBack;
 	public static boolean closePickupsToggle;
 	public static boolean extendPickupsToggle;
 	public static boolean lockBrake;
-	
-	public static boolean triggerClosed; 
-	public static int launchPIDEnable;	
+
+	public static boolean triggerClosed;
+	public static int launchPIDEnable;
 	public static int cockLauncher;
 	public static int launchSequence;
-	
+
 
 }

@@ -115,6 +115,12 @@ public class Drive extends Subsystem{
     driveVelocity(x, y, theta, ControlMode.PercentOutput);
   }
 
+  public void setAngles(double[] angles) {
+    for (int i = 0; i < angles.length; i++) {
+      m_wheelModules[i].setAngle(angles[i]);
+    }
+  }
+
   // Wrapper class to hold the implementation details of the Module
   private class WheelModule {
     // offset to hold the zero value of the module
