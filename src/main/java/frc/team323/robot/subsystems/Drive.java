@@ -89,7 +89,7 @@ public class Drive extends Subsystem{
       //   maxV = Math.abs(velocities[i]);
       // }
 
-      angles[i] = (Math.toDegrees(Math.atan2(w_y, -w_x) + 90)) % 360;
+      angles[i] = (Math.toDegrees(Math.atan2(-w_x, w_y) + 90)) % 360;
 
 	  SmartDashboard.putNumber("WheelHeading " + _sb.append(i), angles[i]);
 	  //System.out.print(angles[i]);

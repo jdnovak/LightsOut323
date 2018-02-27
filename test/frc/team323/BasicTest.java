@@ -17,7 +17,7 @@ public class BasicTest {
     double x = 0.0;
     double y = 1.0;
     assertThat(Math.toDegrees(Math.atan2(y,-x))+ 90).isWithin(1.0e-2).of(180);
-    assertThat(Math.toDegrees(Math.atan2(0,1))+ 90).isWithin(1.0e-2).of(90);
+    assertThat(Math.toDegrees(Math.atan2(0,-1))+ 90).isWithin(1.0e-2).of(270);
   }
 
   @Test
