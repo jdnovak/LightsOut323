@@ -81,8 +81,8 @@ public class Drive extends Subsystem{
         angles = (180/pi)*atan2(w_x, w_y);
       */
       // There's an argument this could be moved into the WheelModule
-      double w_x = x + theta; //* module.getPosition().getY()/Config.kTrackWidth;
-      double w_y = y + theta;// * module.getPosition().getX()/Config.kTrackLength;
+      double w_x = x + theta * module.getPosition().getX()/Config.kTrackWidth;
+      double w_y = y + theta * module.getPosition().getY()/Config.kTrackLength;
       velocities[i] = Math.sqrt(Math.pow(w_x, 2) + Math.pow(w_y, 2));
       // We track this to normalize as we set the velocities in PercentOutput mode
       // if(Math.abs(velocities[i]) > maxV) {
