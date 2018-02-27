@@ -15,15 +15,15 @@ public class BasicTest {
   @Test
   public void  Atan2Test() {
     double[][] testVals = {
-      {0,1, -180},
-      {1,0, -90},
+      {0,1, 180},
+      {1,0, 270},
       {0, -1, 0},
-      {-1, 0, -270},
-      {1,1, -135},
-      {.5,.5, -135}
+      {-1, 0, 90},
+      {1,1, 225},
+      {.5,.5, 225}
     };
     for (double[] test : testVals ) {
-        assertThat(Math.toDegrees(Math.atan2(-test[1],test[0]))-90).isWithin(1.0e-2).of(test[2]);
+        assertThat(Math.toDegrees(Math.atan2(test[1],-test[0]))+90).isWithin(1.0e-2).of(test[2]);
     }
 
 
