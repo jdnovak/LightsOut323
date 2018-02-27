@@ -14,7 +14,9 @@ public class BasicTest {
   }
   @Test
   public void  Atan2Test() {
-    assertThat(Math.toDegrees(Math.atan2(1,0))).isWithin(1.0e-2).of(90);
+    double x = 1.0;
+    double y = 0.0;
+    assertThat(Math.toDegrees(Math.atan2(y,-x))).isWithin(1.0e-2).of(180);
   }
 
   @Test

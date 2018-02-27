@@ -64,7 +64,7 @@ public class Drive extends Subsystem{
 
 	//get gyro data and calculate field-centric offsets
 	double baseAngle = 360. - getHeading();
-	double baseRadians = baseAngle * (3.14159 / 180);
+	double baseRadians = baseAngle * (Math.PI / 180);
 
 	double y = yNL * Math.cos(baseRadians) + xNL * Math.sin(baseRadians);
 	double x = -yNL * Math.sin(baseRadians) + xNL * Math.cos(baseRadians);
@@ -89,7 +89,7 @@ public class Drive extends Subsystem{
       //   maxV = Math.abs(velocities[i]);
       // }
 
-      angles[i] = (Math.toDegrees(Math.atan2(w_x, w_y)) + 180) % 360;
+      angles[i] = (Math.toDegrees(Math.atan2(w_y, -w_x))) % 360;
 
 	  SmartDashboard.putNumber("WheelHeading " + _sb.append(i), angles[i]);
 	  //System.out.print(angles[i]);
