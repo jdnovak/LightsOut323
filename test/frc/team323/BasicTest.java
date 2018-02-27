@@ -14,10 +14,19 @@ public class BasicTest {
   }
   @Test
   public void  Atan2Test() {
-    double x = 0.0;
-    double y = 1.0;
-    assertThat(Math.toDegrees(Math.atan2(y,-x))+ 90).isWithin(1.0e-2).of(180);
-    assertThat(Math.toDegrees(Math.atan2(0,-1))+ 90).isWithin(1.0e-2).of(270);
+    double[][] testVals = {
+      {0,1, -180},
+      {1,0, -90},
+      {0, -1, 0},
+      {-1, 0, -270},
+      {1,1, -135},
+      {.5,.5, -135}
+    };
+    for (double[] test : testVals ) {
+        assertThat(Math.toDegrees(Math.atan2(-test[1],test[0]))-90).isWithin(1.0e-2).of(test[2]);
+    }
+
+
   }
 
   @Test

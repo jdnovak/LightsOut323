@@ -82,14 +82,14 @@ public class Drive extends Subsystem{
       */
       // There's an argument this could be moved into the WheelModule
       double w_x = x + theta * module.getPosition().getY()/Config.kTrackWidth;
-      double w_y = y - theta * module.getPosition().getX()/Config.kTrackLength;
+      double w_y = y + theta * module.getPosition().getX()/Config.kTrackLength;
       velocities[i] = Math.sqrt(Math.pow(w_x, 2) + Math.pow(w_y, 2));
       // We track this to normalize as we set the velocities in PercentOutput mode
       // if(Math.abs(velocities[i]) > maxV) {
       //   maxV = Math.abs(velocities[i]);
       // }
 
-      angles[i] = (Math.toDegrees(Math.atan2(-w_x, w_y) + 90)) % 360;
+      angles[i] = (Math.toDegrees(Math.atan2(w_y, w_x) -90)) % 360;
 
 	  SmartDashboard.putNumber("WheelHeading " + _sb.append(i), angles[i]);
 	  //System.out.print(angles[i]);
