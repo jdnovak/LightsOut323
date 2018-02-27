@@ -10,6 +10,8 @@ public class Config {
   public static int kDefaultTimeout = 10;
   public static int kDefaultPIDIndex = 0;
 
+  public static double kDriveHeadingOffset = 180;
+
   public static int kFrontLeftSteerId = 1;
   public static int kFrontLeftDriveId = 2;
   public static int kFrontLeftSlaveId = 3;

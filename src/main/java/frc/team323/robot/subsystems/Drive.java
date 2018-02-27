@@ -20,7 +20,7 @@ import frc.team323.robot.Config;
 import frc.team323.lib.geom.Translate2d;
 import frc.team323.lib.geom.SwerveUtils;
 
-import frc.team323.robot.commands.OpenLoopDrive;
+import frc.team323.robot.commands.FieldCentricOpenLoopDrive;
 
 public class Drive extends Subsystem{
 
@@ -39,7 +39,7 @@ public class Drive extends Subsystem{
   }
 
   public void initDefaultCommand(){
-    setDefaultCommand(new OpenLoopDrive());
+    setDefaultCommand(new FieldCentricOpenLoopDrive());
   }
 
   public double getHeading() {
@@ -66,8 +66,8 @@ public class Drive extends Subsystem{
 	double baseAngle = 360. - getHeading();
 	double baseRadians = baseAngle * (Math.PI / 180);
 
-	double y = yNL * Math.cos(baseRadians) + xNL * Math.sin(baseRadians);
-	double x = -yNL * Math.sin(baseRadians) + xNL * Math.cos(baseRadians);
+	double y = yNL;// * Math.cos(baseRadians) + xNL * Math.sin(baseRadians);
+	double x = -yNL;// * Math.sin(baseRadians) + xNL * Math.cos(baseRadians);
 
     int i = 0;
     double maxV = 0;
