@@ -71,7 +71,7 @@ public class Drive extends Subsystem{
 	double baseRadians = baseAngle * (Math.PI / 180);
 
 	double y = yNL;// * Math.cos(baseRadians) + xNL * Math.sin(baseRadians);
-	double x = -yNL;// * Math.sin(baseRadians) + xNL * Math.cos(baseRadians);
+	double x = xNL;// * Math.sin(baseRadians) + xNL * Math.cos(baseRadians);
 
     int i = 0;
     double maxV = 0;
