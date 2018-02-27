@@ -22,6 +22,8 @@ import frc.team323.lib.geom.SwerveUtils;
 
 import frc.team323.robot.commands.FieldCentricOpenLoopDrive;
 
+import frc.team323.robot.commands.OpenLoopDrive;
+
 public class Drive extends Subsystem{
 
   private WheelModule[] m_wheelModules;
@@ -40,6 +42,8 @@ public class Drive extends Subsystem{
 
   public void initDefaultCommand(){
     setDefaultCommand(new FieldCentricOpenLoopDrive());
+    // setDefaultCommand(new OpenLoopDrive());
+
   }
 
   public double getHeading() {
