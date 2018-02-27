@@ -1,7 +1,7 @@
 package test.frc.team323;
 
 import org.junit.Test;
-import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.*;
 import java.lang.Math;
 
 import frc.team323.lib.geom.SwerveUtils;
@@ -15,15 +15,18 @@ public class BasicTest {
   @Test
   public void  Atan2Test() {
     double[][] testVals = {
-      {0,1, 180},
-      {1,0, 270},
+      {0,1, -180},
+      {1,0, -90},
       {0, -1, 0},
       {-1, 0, 90},
-      {1,1, 225},
-      {.5,.5, 225}
+      {.5,.5, -135}, //Front Left
+      {.5, -.5, -45}, // Front Right
+      {-.5, .5, 135}, // Back Left
+      {-.5, -.5, 45} // Back Right
     };
     for (double[] test : testVals ) {
-        assertThat(Math.toDegrees(Math.atan2(test[1],-test[0]))+90).isWithin(1.0e-2).of(test[2]);
+        assertWithMessage(String.format("%f, %f => %f", test[0], test[1], test[2]))
+        .that((Math.toDegrees(Math.atan2(-test[0],-test[1])))%360).isWithin(1.0e-2).of(test[2]);
     }
 
 
