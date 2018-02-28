@@ -41,8 +41,8 @@ public class Drive extends Subsystem{
   }
 
   public void initDefaultCommand(){
-    setDefaultCommand(new FieldCentricOpenLoopDrive());
-    // setDefaultCommand(new OpenLoopDrive());
+    //setDefaultCommand(new FieldCentricOpenLoopDrive());
+     setDefaultCommand(new OpenLoopDrive());
 
   }
 
@@ -62,9 +62,9 @@ public class Drive extends Subsystem{
     double[] angles = new double[m_wheelModules.length];
 
 	//  Non-linearize axis inputs
-	double xNL = .5*Math.pow(X,3) + (1-.5)*X;
-	double yNL = .5*Math.pow(Y,3) + (1-.5)*Y;
-	double theta = .9 *Math.pow(Theta,3) + (1-.9)*Theta;
+	double xNL = .4*Math.pow(X,3) + (1-.4)*X;
+	double yNL = .4*Math.pow(Y,3) + (1-.4)*Y;
+	double theta = .7 *Math.pow(Theta,3) + (1-.7)*Theta;
 
 	//get gyro data and calculate field-centric offsets
 	double baseAngle = 360. - getHeading();
