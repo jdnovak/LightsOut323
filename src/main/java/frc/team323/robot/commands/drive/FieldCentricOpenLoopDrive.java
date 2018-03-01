@@ -25,10 +25,10 @@ public class FieldCentricOpenLoopDrive extends Command {
     // TODO pull in from OI in a cleaner way
     // For testing, left stick controls x/y right stick x controls rotation
     // TODO rewrite this as SteeredCrab
-    double x = Robot.oi.driverController.getRawAxis(0) * -1;
-    double y = Robot.oi.driverController.getRawAxis(1);
-    double theta = Robot.oi.thetaController.getRawAxis(0) * -1;
-    double heading = Robot.drivetrain.getHeading() + Config.kDriveHeadingOffset;
+    double x = Robot.oi.driverController.getRawAxis(0);
+    double y = - Robot.oi.driverController.getRawAxis(1);
+    double theta = Robot.oi.thetaController.getRawAxis(0);
+    double heading = Robot.drivetrain.getHeading();//+ Config.kDriveHeadingOffset;
     // theta (or more accurately omega) doesn't need to be transformed since it's a angular component
     // independent of the rotation.
     Vector2d adjustedInput = SwerveUtils.TransformFieldCentric(x, y, heading);
