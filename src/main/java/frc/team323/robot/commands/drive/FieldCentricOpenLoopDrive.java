@@ -3,9 +3,13 @@ package frc.team323.robot.commands;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.drive.Vector2d;
+
 
 import frc.team323.robot.Robot;
 import frc.team323.robot.Config;
+import frc.team323.lib.geom.SwerveUtils;
+
 
 
 public class FieldCentricOpenLoopDrive extends Command {
@@ -25,10 +29,10 @@ public class FieldCentricOpenLoopDrive extends Command {
     double y = Robot.oi.driverController.getRawAxis(1);
     double theta = Robot.oi.thetaController.getRawAxis(0) * -1;
     double heading = Robot.drivetrain.getHeading() + Config.kDriveHeadingOffset;
-    double headingRadians = Math.toRadians(heading);
-    double adjX = y*Math.sin(headingRadians) + x*Math.cos(headingRadians);
-    double adjY = -x*Math.sin(headingRadians) + y*Math.cos(headingRadians);
-    Robot.drivetrain.driveVelocity(adjX, adjY, theta ,ControlMode.PercentOutput);
+    // theta (or more accurately omega) doesn't need to be transformed since it's a angular component
+    // independent of the rotation.
+    Vector2d adjustedInput = SwerveUtils.TransformFieldCentric(x, y, heading);
+    Robot.drivetrain.driveVelocity(adjustedInput.x, adjustedInput.y, theta ,ControlMode.PercentOutput);
   }
 
   public boolean isFinished() {
