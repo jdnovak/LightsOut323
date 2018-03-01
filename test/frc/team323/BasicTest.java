@@ -64,5 +64,6 @@ public class BasicTest {
     assertThat(SwerveUtils.TransformFieldCentric(0,1,-90).x).isWithin(1.0e-2).of(-1.0);
     assertThat(SwerveUtils.TransformFieldCentric(0,1,-90).y).isWithin(1.0e-2).of(0.0);
     assertThat(SwerveUtils.TransformFieldCentric(0,1,-45).y).isWithin(1.0e-2).of(.707);
+    assertThat(SwerveUtils.TransformFieldCentric(0,1,-45).x).isWithin(1.0e-2).of(-.707);
   }
 }
