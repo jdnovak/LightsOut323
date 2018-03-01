@@ -12,7 +12,7 @@ public class SwerveUtils {
 
   public static Vector2d TransformFieldCentric(double x, double y, double headingDegrees){
     Vector2d control = new Vector2d(x,y);
-    control.rotate(-headingDegrees);
+    control.rotate(headingDegrees);
     return control;
   }
 
