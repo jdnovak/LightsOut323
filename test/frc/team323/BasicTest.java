@@ -56,4 +56,13 @@ public class BasicTest {
     assertThat(SwerveUtils.ComputeAbsoluteAngle(180,0)).isEqualTo(new double[] {180, -1});
     assertThat(SwerveUtils.ComputeAbsoluteAngle(0,180)).isEqualTo(new double[] {0, -1});
   }
+
+  @Test
+  public void FieldCentricTest() {
+    assertThat(SwerveUtils.TransformFieldCentric(0,1,0).y).isWithin(1.0e-2).of(1.0);
+    assertThat(SwerveUtils.TransformFieldCentric(0,1,90).x).isWithin(1.0e-2).of(1.0);
+    assertThat(SwerveUtils.TransformFieldCentric(0,1,-90).x).isWithin(1.0e-2).of(-1.0);
+    assertThat(SwerveUtils.TransformFieldCentric(0,1,-90).y).isWithin(1.0e-2).of(0.0);
+    assertThat(SwerveUtils.TransformFieldCentric(0,1,-45).y).isWithin(1.0e-2).of(.707);
+  }
 }

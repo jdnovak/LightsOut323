@@ -1,12 +1,19 @@
 package frc.team323.lib.geom;
 
 import java.lang.Math;
+import edu.wpi.first.wpilibj.drive.Vector2d;
 
 public class SwerveUtils {
   // This function returns if the move is optimal or if the inverse is
   // It checks to make sure the move is less than 180.
   public static boolean LeastAngleInverted(double currentAngle, double targetAngle) {
     return Math.abs(currentAngle - targetAngle) >= 180 ;
+  }
+
+  public static Vector2d TransformFieldCentric(double x, double y, double headingDegrees){
+    Vector2d control = new Vector2d(x,y);
+    control.rotate(-headingDegrees);
+    return control;
   }
 
   public static double[] ComputeAbsoluteAngle(double currentRawAngle, double targetBoundedAngle) {
