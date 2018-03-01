@@ -165,7 +165,7 @@ public class Robot extends TimedRobot {
 			 Config.tiltUp = false;
 			 Config.tiltBack = false;
 			 Config.extendPickupsToggle = true;
-			 Config.closePickupsToggle = true;
+			 Config.closePickupsToggle = false;
 			 Config.pickupOS = true;
 			 Config.notpickupOS = false;
 		}
@@ -178,13 +178,25 @@ public class Robot extends TimedRobot {
 			Config.closePickupsToggle = false;
 			Config.notpickupOS = true;
 			Config.pickupOS = false;
-		}	
+		}
+
+			// Toggle Pickup Close/ Open
+		if(Robot.oi.operatorController.getRawButton(3) &! Config.pickupToggleOS) {
+			if (Config.closePickupsToggle)
+				Config.closePickupsToggle = false;
+			else if (!Config.closePickupsToggle)
+				Config.closePickupsToggle = true;	
+			Config.pickupToggleOS =true;	
+			}
+		if(!Robot.oi.operatorController.getRawButton(3) && Config.pickupToggleOS)
+			Config.pickupToggleOS = false;
+					
 			
 			// Run intake wheels in and out 
 			if (Robot.oi.driverController.getTrigger())
-				pickupWheels.set(ControlMode.PercentOutput,-1.0);
+				pickupWheels.set(ControlMode.PercentOutput,1.0);
 			else {	
-			double wheelSpeed = Robot.oi.operatorController.getRawAxis(5) * -1;
+			double wheelSpeed = Robot.oi.operatorController.getRawAxis(5) ;
 			pickupWheels.set(ControlMode.PercentOutput,wheelSpeed);
 			}	
 	

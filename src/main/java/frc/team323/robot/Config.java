@@ -139,6 +139,7 @@ public class Config {
 
 	public static boolean pickupOS;
 	public static boolean notpickupOS;
+	public static boolean pickupToggleOS;
 
 	public static boolean tiltForward;
 	public static boolean tiltUp;
