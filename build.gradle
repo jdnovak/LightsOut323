@@ -35,6 +35,7 @@ deploy {
     }
 }
 
+
 // Defining my dependencies. In this case, WPILib (+ friends), CTRE Toolsuite (Talon SRX)
 // and NavX.
 dependencies {
@@ -42,6 +43,7 @@ dependencies {
     compile ctre()
     compile navx()
     compile openrio.powerup.matchData()
+    compile pathfinder()
     testCompile "com.google.truth:truth:0.39"
     testCompile 'junit:junit:4.12'
 
