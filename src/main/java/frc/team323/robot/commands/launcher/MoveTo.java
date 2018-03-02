@@ -7,9 +7,8 @@ import frc.team323.robot.Robot;
 public class MoveTo extends Command {
 
   int target = 0;
-  int profile = 1;
 
-  public MoveTo(int target, int profile) {
+  public MoveTo(int target) {
     super(2.5);
     requires(Robot.launcher);
     this.target = target;
@@ -20,7 +19,7 @@ public class MoveTo extends Command {
   }
 
   public void execute() {
-    Robot.launcher.moveWinch(draw, profile);
+    Robot.launcher.moveWinch(draw);
   }
 
   public boolean isFinished() {

@@ -104,7 +104,8 @@ public class Launcher extends Subsystem{
 
   public void moveWinch(int target, int profile) {
     k_brake.set(false);
-    k_master.selectProfileSlot(profile, 0);
+    // We switch how we move based on if trigger is set
+    k_master.selectProfileSlot((k_trigger.get()? 1: 0), 0);
     ControlMode mode = k_trigger.get() ? ControlMode.Position : ControlMode.MotionMagic;
     k_master.set(mode, target);
   }
