@@ -17,7 +17,7 @@ public class OI {
     driverController = new Joystick(0);
 	thetaController = new Joystick(1);
 	operatorController = new Joystick(2);
-  JoystickButton lockButton = new JoystickButton(driverController, Config.lockButton);
+  JoystickButton lockButton = new JoystickButton(thetaController, Config.lockButton);
   lockButton.toggleWhenPressed(new Park());
   }
 }

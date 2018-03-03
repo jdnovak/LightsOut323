@@ -33,6 +33,7 @@ public class Robot extends TimedRobot {
 	DoubleSolenoid elevatorBack = new DoubleSolenoid(4,5);
 	DoubleSolenoid elevatorForward = new DoubleSolenoid(6,7);
 	Solenoid closePickups = new Solenoid(1,0);
+	Solenoid cubeHolddown = new Solenoid(1,1);
 	DigitalInput homeSwitch = new DigitalInput(0);
 	TalonSRX winchMaster = new TalonSRX(13);
 	VictorSPX winchSlave = new VictorSPX(14);
@@ -49,12 +50,12 @@ public class Robot extends TimedRobot {
 	winchMaster.configSelectedFeedbackSensor((FeedbackDevice.CTRE_MagEncoder_Relative), 0,10);
 	winchMaster.setInverted(true);
 	winchSlave.setInverted(true);
-	winchMaster.config_kF(0, .650, 10);
+	winchMaster.config_kF(0, 2.5, 10);
 	winchMaster.config_kP(0, 1.5, 10);
 	winchMaster.config_kI(0, 0.0, 10);
 	winchMaster.config_kD(0, 0.0, 10);
-	winchMaster.configMotionCruiseVelocity(2800, 10);
-	winchMaster.configMotionAcceleration(1800, 10);
+	winchMaster.configMotionCruiseVelocity(15000, 10);
+	winchMaster.configMotionAcceleration(5000, 10);
 	
 	winchMaster.config_kF(1, .605, 10);
 	winchMaster.config_kP(1, 5.0, 10);
@@ -172,8 +173,8 @@ public class Robot extends TimedRobot {
 		double rightTrigger = Robot.oi.operatorController.getRawAxis(3);
 		if(rightTrigger > 0.1 && Config.pickupOS && !Config.notpickupOS) {
 			Config.tiltForward = false;
-			Config.tiltUp = false;
-			 Config.tiltBack = true;
+			Config.tiltUp = true;
+			 Config.tiltBack = false;
 			Config.extendPickupsToggle = false;
 			Config.closePickupsToggle = false;
 			Config.notpickupOS = true;
@@ -181,16 +182,22 @@ public class Robot extends TimedRobot {
 		}
 
 			// Toggle Pickup Close/ Open
-		if(Robot.oi.operatorController.getRawButton(3) &! Config.pickupToggleOS) {
+		if(Robot.oi.operatorController.getRawButton(5) &! Config.pickupToggleOS) {
 			if (Config.closePickupsToggle)
 				Config.closePickupsToggle = false;
 			else if (!Config.closePickupsToggle)
 				Config.closePickupsToggle = true;	
 			Config.pickupToggleOS =true;	
 			}
-		if(!Robot.oi.operatorController.getRawButton(3) && Config.pickupToggleOS)
+		if(!Robot.oi.operatorController.getRawButton(5) && Config.pickupToggleOS)
 			Config.pickupToggleOS = false;
-					
+			
+		// Cube Holddown cylinder
+		double winchPosition = winchMaster.getSelectedSensorPosition(0);
+		if(!Config.extendPickupsToggle && !Config.triggerClosed && winchPosition < 100)
+			cubeHolddown.set(true);
+		else
+			cubeHolddown.set(false);
 			
 			// Run intake wheels in and out 
 			if (Robot.oi.driverController.getTrigger())
@@ -221,7 +228,7 @@ public class Robot extends TimedRobot {
 				
 			//	Manual Winch Override	
 			double winchSpeed = Robot.oi.operatorController.getRawAxis(1);
-		if( Robot.oi.operatorController.getRawButton(5)) {
+		if( Robot.oi.operatorController.getRawButton(3)) {
 				winchMaster.selectProfileSlot(0,0);
 				winchMaster.set(ControlMode.PercentOutput, winchSpeed * .8);
 			}

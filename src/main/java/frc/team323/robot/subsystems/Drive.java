@@ -41,8 +41,8 @@ public class Drive extends Subsystem{
   }
 
   public void initDefaultCommand(){
-    //setDefaultCommand(new FieldCentricOpenLoopDrive());
-     setDefaultCommand(new OpenLoopDrive());
+    setDefaultCommand(new FieldCentricOpenLoopDrive());
+     //setDefaultCommand(new OpenLoopDrive());
 
   }
 
