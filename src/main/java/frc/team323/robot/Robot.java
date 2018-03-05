@@ -162,6 +162,8 @@ public class Robot extends TimedRobot {
 	
 		// Operator Cube Pickup Sequence
 		if (Robot.oi.operatorController.getRawButton(6) && !Config.pickupOS) {
+			winchMaster.selectProfileSlot(0,0);	
+			winchMaster.set(ControlMode.MotionMagic, 0);
 		 	 Config.tiltForward = true; 
 			 Config.tiltUp = false;
 			 Config.tiltBack = false;
@@ -172,11 +174,14 @@ public class Robot extends TimedRobot {
 		}
 		double rightTrigger = Robot.oi.operatorController.getRawAxis(3);
 		if(rightTrigger > 0.1 && Config.pickupOS && !Config.notpickupOS) {
+			Config.triggerClosed = false;
+			winchMaster.selectProfileSlot(0,0);	
+			winchMaster.set(ControlMode.MotionMagic, 5100);
 			Config.tiltForward = false;
-			Config.tiltUp = true;
-			 Config.tiltBack = false;
+			Config.tiltUp = false;
+			 Config.tiltBack = true;
 			Config.extendPickupsToggle = false;
-			Config.closePickupsToggle = false;
+			Config.closePickupsToggle = true;
 			Config.notpickupOS = true;
 			Config.pickupOS = false;
 		}
@@ -237,17 +242,24 @@ public class Robot extends TimedRobot {
 			double leftTrigger = Robot.oi.operatorController.getRawAxis(2);
 			if(leftTrigger > .8){
 			Config.triggerClosed = false;
+			Config.closePickupsToggle = false;
 				winchMaster.selectProfileSlot(0,0);	
 				winchMaster.set(ControlMode.MotionMagic, 11500);
 			}	
 			if(leftTrigger > .2 && leftTrigger < .8){
 			Config.triggerClosed = false;
+			Config.closePickupsToggle = false;
 				winchMaster.selectProfileSlot(0,0);	
 				winchMaster.set(ControlMode.MotionMagic, 0);
 			}
 				
 			//	Run Launch Mode of Launchivator
 			if(Robot.oi.operatorController.getPOV() == 0) { 
+				if(Config.launchSequence ==0){
+				Config.closePickupsToggle = false;
+				winchMaster.selectProfileSlot(0,0);	
+				winchMaster.set(ControlMode.MotionMagic, 0);
+				}
 				if(!homeSwitch.get() && Config.launchSequence == 0) {
 					Config.triggerClosed = true;
 					Config.launchSequence = 1;
@@ -256,7 +268,7 @@ public class Robot extends TimedRobot {
 					launchTimer.reset();
 					launchTimer.start();	
 					winchMaster.selectProfileSlot(1,0);
-					winchSetPoint = 9800;
+					winchSetPoint = 10000;
 					winchMaster.set(ControlMode.Position, winchSetPoint);
 					Config.launchSequence = 2;
 					}
