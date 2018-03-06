@@ -75,7 +75,11 @@ public class Robot extends TimedRobot {
 	public void disabledInit() { }
 
     @Override
-    public void autonomousInit() { }
+    public void autonomousInit() {
+	
+	// Offset Winch Encoder for up position
+			winchMaster.setSelectedSensorPosition(0, 11800, 10);
+	}
 
     @Override
     public void teleopInit() {
@@ -91,9 +95,14 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {
       Scheduler.getInstance().run();
 	  double winchInitialPosition = winchMaster.getSelectedSensorPosition(0);
-	  SmartDashboard.putNumber("Winch Initial Position", (winchInitialPosition));
+	  SmartDashboard.putNumber("Winch Disabled Position", (winchInitialPosition));
 	  //winchMaster.set(ControlMode.Position, winchInitialPosition);
 	  SmartDashboard.putBoolean("Home Switch", !homeSwitch.get());
+	  SmartDashboard.putNumber("Heading",Robot.drivetrain.getHeading());
+	  
+	  // zero Gyro Heading
+	if(Robot.oi.driverController.getRawButton(6))
+		Robot.drivetrain.zeroheading();
 	  
 	  
     }
@@ -128,7 +137,7 @@ public class Robot extends TimedRobot {
 	//if(Robot.oi.driverController.getRawButton(5))
 	//	shifter.set(false);
 	//else
-		shifter.set(true);
+		shifter.set(false);
 		
 	//if(Robot.oi.driverController.getRawButton(9))
 	//	closePickups.set(true);
@@ -340,8 +349,12 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putBoolean("Home Switch", !homeSwitch.get());
 		SmartDashboard.putBoolean("TriggerClosed", Config.triggerClosed);
 		SmartDashboard.putBoolean("BrakeLock", Config.lockBrake);
-		SmartDashboard.putNumber("POV", Robot.oi.operatorController.getPOV());
-		SmartDashboard.putNumber("LeftTrigger", leftTrigger);
+		
+		SmartDashboard.putNumber("Heading",Robot.drivetrain.getHeading());
+		
+		
+		//SmartDashboard.putNumber("POV", Robot.oi.operatorController.getPOV());
+		//SmartDashboard.putNumber("LeftTrigger", leftTrigger);
 	
     }
 

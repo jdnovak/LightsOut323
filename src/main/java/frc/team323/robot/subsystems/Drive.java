@@ -96,13 +96,15 @@ public class Drive extends Subsystem{
       angles[i] = (Math.toDegrees(Math.atan2(-w_x, -w_y))) % 360;
 
 	  SmartDashboard.putNumber("WheelHeading " + _sb.append(i), angles[i]);
+	  
 	  //System.out.print(angles[i]);
       i++;
 
-	  SmartDashboard.putNumber("Heading",getHeading());
+	  
 
     }
     i = 0;
+	_sb.setLength(0);
     // If we're not in PercentOutput mode we don't care about true normalizing
     // We also don't care about normalizing if the maxV is below the max value of 1.0
     // if(ControlMode.PercentOutput != mode || maxV < 1.0){
@@ -111,6 +113,7 @@ public class Drive extends Subsystem{
     //System.out.println(".");
     for (WheelModule module : m_wheelModules) {
       module.setSpeedAndAngle(velocities[i], angles[i]);
+	  SmartDashboard.putNumber("WheelDistance " + _sb.append(i), module.m_driveController.getSelectedSensorPosition(0));
       i++;
     }
   }
@@ -183,6 +186,7 @@ public class Drive extends Subsystem{
     // Set open loop speed
     public void setSpeed(double speed){
       m_driveController.set(ControlMode.PercentOutput, m_direction * speed);
+	  
     }
 
     // tell the module to steer to an angle, incorporates offset
