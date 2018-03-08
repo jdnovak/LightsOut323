@@ -19,7 +19,7 @@ public class OpenLoopDrive extends Command {
     // TODO pull in from OI in a cleaner way
     // For testing, left stick controls x/y right stick x controls rotation
     // TODO rewrite this as SteeredCrab
-    Robot.drivetrain.driveVelocity(Robot.oi.driverController.getRawAxis(0), Robot.oi.driverController.getRawAxis(1)* -1, Robot.oi.thetaController.getRawAxis(0) ,ControlMode.PercentOutput);
+    Robot.drivetrain.driveVelocity(-Robot.oi.driverController.getRawAxis(0), Robot.oi.driverController.getRawAxis(1), -Robot.oi.thetaController.getRawAxis(0) ,ControlMode.PercentOutput);
   }
 
   public boolean isFinished() {
