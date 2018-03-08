@@ -46,6 +46,10 @@ public class Drive extends Subsystem{
 
   }
 
+  public WheelModule getWheel(int index){
+    return m_wheelModules[index];
+  }
+
   public double getHeading() {
     return m_gyro.getYaw();
   }
@@ -95,12 +99,12 @@ public class Drive extends Subsystem{
 
       angles[i] = (Math.toDegrees(Math.atan2(-w_x, -w_y))) % 360;
 
-	  SmartDashboard.putNumber("WheelHeading " + _sb.append(i), angles[i]);
-	  
+	  // SmartDashboard.putNumber("WheelHeading " + _sb.append(i), angles[i]);
+
 	  //System.out.print(angles[i]);
       i++;
 
-	  
+
 
     }
     i = 0;
@@ -113,7 +117,7 @@ public class Drive extends Subsystem{
     //System.out.println(".");
     for (WheelModule module : m_wheelModules) {
       module.setSpeedAndAngle(velocities[i], angles[i]);
-	  SmartDashboard.putNumber("WheelDistance " + _sb.append(i), module.m_driveController.getSelectedSensorPosition(0));
+	  // SmartDashboard.putNumber("WheelDistance " + _sb.append(i), module.m_driveController.getSelectedSensorPosition(0));
       i++;
     }
   }
@@ -124,99 +128,12 @@ public class Drive extends Subsystem{
 
   public void setAngles(double[] angles) {
     for (int i = 0; i < angles.length; i++) {
-      m_wheelModules[i].setAngle(angles[i]);
+      m_wheelModules[i].setSpeedAndAngle(0,angles[i]);
     }
   }
+
+
 
   // Wrapper class to hold the implementation details of the Module
-  private class WheelModule {
-    // offset to hold the zero value of the module
-    private int m_offset = 0;
-    private TalonSRX m_steeringController;
-    private TalonSRX m_driveController;
-    private VictorSPX m_slaveController;
-    private Translate2d m_position;
-    private int m_direction;
 
-    public WheelModule(int steeringId, int driveId, int slaveId, int offset, Translate2d position, int index) {
-
-	  StringBuilder _sb = new StringBuilder();
-      m_position = position;
-      m_offset = offset;
-      m_direction = Config.Inverted[index] ? -1 : 1;
-      m_steeringController  = new TalonSRX(steeringId);
-      m_steeringController.config_kF(Config.kDefaultPIDIndex,Config.k_F[index], Config.kDefaultTimeout);
-      m_steeringController.config_kP(Config.kDefaultPIDIndex,Config.k_P[index], Config.kDefaultTimeout);
-      m_steeringController.config_kI(Config.kDefaultPIDIndex,Config.k_I[index], Config.kDefaultTimeout);
-      m_steeringController.config_kD(Config.kDefaultPIDIndex,Config.k_D[index], Config.kDefaultTimeout);
-      m_steeringController.configMotionCruiseVelocity(Config.CruiseVelocity[index], Config.kDefaultTimeout);
-      m_steeringController.configMotionAcceleration(Config.Acceleration[index], Config.kDefaultTimeout);
-      // m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
-
-
-	  int absolutePosition = (int)m_steeringController.getSensorCollection().getPulseWidthPosition() & 0xFFF;
-	  m_steeringController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
-
-      // Set up the offset for this sensor
-      m_steeringController.setSelectedSensorPosition(absolutePosition + m_offset, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
-
-	  // Make the sensor not continuous
-      //m_steeringController.configSetParameter(ParamEnum.eFeedbackNotContinuous, 1, 0x00, 0x00, 0x00);
-
-	  SmartDashboard.putNumber("InitialValue" + _sb.append(index), absolutePosition);
-
-
-      m_driveController = new TalonSRX(driveId);
-      m_driveController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
-
-
-      // This is the second controller, we ALWAYS want it to mirror the drive controller
-      m_slaveController = new VictorSPX(slaveId);
-      m_slaveController.follow(m_driveController);
-
-    }
-
-    public void setSpeedAndAngle(double speed, double angle) {
-      double[] command = SwerveUtils.ComputeAbsoluteAngle(this.getAngle(), angle);
-      setSpeed(speed * command[1]);
-      setAngle(command[0]);
-
-    }
-
-    // Set open loop speed
-    public void setSpeed(double speed){
-      m_driveController.set(ControlMode.PercentOutput, m_direction * speed);
-	  
-    }
-
-    // tell the module to steer to an angle, incorporates offset
-    // Mode should be either MotionMagic or Position, others will have undefined behavior
-    public void setAngle(double angle, ControlMode mode){
-        double value = 4096 * (angle/360.0);
-		SmartDashboard.putNumber("SteeringValue", value);
-		m_steeringController.set(mode, (int)value);
-    }
-
-    // tell module to steer to an angle
-    // Mode is always MotionMagic
-    public void setAngle(double angle) {
-      this.setAngle(angle, ControlMode.MotionMagic);
-    }
-
-    public double getAngle() {
-      return m_steeringController.getSelectedSensorPosition(0)/4096.0 * 360.0;
-    }
-
-    public double getBoundedAngle() {
-      return this.getAngle()%360;
-    }
-
-    public void setOffset(int offset) {
-      m_offset = offset;
-    }
-
-    public Translate2d getPosition(){
-      return m_position;
-    }
-  }
 }
