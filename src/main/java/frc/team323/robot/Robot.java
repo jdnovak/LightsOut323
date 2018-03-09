@@ -24,6 +24,7 @@ public class Robot extends TimedRobot {
     public static final OI oi = new OI();
 	
 	Timer launchTimer = new Timer();
+	Timer autonTimer = new Timer();
 	PowerDistributionPanel pdp= new PowerDistributionPanel(); 
 	Solenoid trigger= new Solenoid(0);
 	Solenoid shifter= new Solenoid(1);	
@@ -76,7 +77,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-	
+	autonTimer.reset();
 	// Offset Winch Encoder for up position
 			winchMaster.setSelectedSensorPosition(11800, 0, 10);
 	}
@@ -110,6 +111,13 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
       Scheduler.getInstance().run();
+	  if(autonTimer.get() < 3.0) {
+	  
+		Robot.drivetrain.driveVelocity(0,.25, 0);
+		}
+		else {
+		Robot.drivetrain.driveVelocity(0,0,0);
+		}
     }
 
     @Override
