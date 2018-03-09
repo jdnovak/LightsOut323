@@ -78,6 +78,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
 	autonTimer.reset();
+	autonTimer.start();
 	// Offset Winch Encoder for up position
 			winchMaster.setSelectedSensorPosition(11800, 0, 10);
 	}
@@ -113,7 +114,7 @@ public class Robot extends TimedRobot {
       Scheduler.getInstance().run();
 	  if(autonTimer.get() < 3.0) {
 	  
-		Robot.drivetrain.driveVelocity(0,.25, 0);
+		Robot.drivetrain.driveVelocity(0,-.4, 0);
 		}
 		else {
 		Robot.drivetrain.driveVelocity(0,0,0);
