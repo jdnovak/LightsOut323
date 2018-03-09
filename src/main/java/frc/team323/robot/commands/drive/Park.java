@@ -14,7 +14,7 @@ public class Park extends Command {
   }
 
   public void execute() {
-    double[] angles = {45, -45, -45, 45};
+    double[] angles = {-45, 45, 45, -45};
     Robot.drivetrain.setAngles(angles);
   }
 

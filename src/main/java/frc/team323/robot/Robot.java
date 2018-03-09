@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
 	
 	// Offset Winch Encoder for up position
-			winchMaster.setSelectedSensorPosition(0, 11800, 10);
+			winchMaster.setSelectedSensorPosition(11800, 0, 10);
 	}
 
     @Override

@@ -124,7 +124,7 @@ public class Drive extends Subsystem{
 
   public void setAngles(double[] angles) {
     for (int i = 0; i < angles.length; i++) {
-      m_wheelModules[i].setAngle(angles[i]);
+      m_wheelModules[i].setSpeedAndAngle(0, angles[i]);
     }
   }
 
