@@ -18,10 +18,14 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import frc.team323.robot.Config;
 import frc.team323.robot.subsystems.Drive;
+import frc.team323.robot.commands.DriveDistance;
+
 
 public class Robot extends TimedRobot {
     public static final Drive drivetrain = new Drive(Config.wheelPos, Config.offsets);
     public static final OI oi = new OI();
+	
+	Command autonCommand = new DriveDistance();
 	
 	Timer launchTimer = new Timer();
 	Timer autonTimer = new Timer();
@@ -73,12 +77,17 @@ public class Robot extends TimedRobot {
 	
     }
 	@Override
-	public void disabledInit() { }
+	public void disabledInit() {
+		autonCommand.cancel();
+	}
 
     @Override
     public void autonomousInit() {
+	autonCommand = new DriveDistance();
+	autonCommand.start();
+
 	autonTimer.reset();
-	autonTimer.start();
+	//autonTimer.start();
 	// Offset Winch Encoder for up position
 			winchMaster.setSelectedSensorPosition(11800, 0, 10);
 	}
@@ -86,7 +95,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
 	Config.launchSequence = 0;
-	
+	autonCommand.cancel();
 	}
 
     @Override
@@ -112,13 +121,6 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
       Scheduler.getInstance().run();
-	  if(autonTimer.get() < 3.0) {
-	  
-		Robot.drivetrain.driveVelocity(0,-.4, 0);
-		}
-		else {
-		Robot.drivetrain.driveVelocity(0,0,0);
-		}
     }
 
     @Override

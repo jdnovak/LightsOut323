@@ -127,6 +127,24 @@ public class Drive extends Subsystem{
       m_wheelModules[i].setSpeedAndAngle(0, angles[i]);
     }
   }
+  
+  public void setDrive(int val) {
+	for(int i = 0; i < m_wheelModules.length; i++) {
+		m_wheelModules[i].setDrive(val);
+	}
+}
+  
+  public void setDrive(int[] values) {
+	for(int i = 0; i < values.length; i++) {
+		m_wheelModules[i].setDrive(values[i]);
+	}	
+  }
+  
+  public void resetDriveEncoders() {
+	for(int i = 0; i < m_wheelModules.length;  i++){
+		m_wheelModules[i].resetDriveEncoder();
+	}
+}
 
   // Wrapper class to hold the implementation details of the Module
   private class WheelModule {
@@ -168,6 +186,12 @@ public class Drive extends Subsystem{
 
       m_driveController = new TalonSRX(driveId);
       m_driveController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
+	  m_driveController.config_kF(Config.kDefaultPIDIndex,Config.k_F[index], Config.kDefaultTimeout);
+      m_driveController.config_kP(Config.kDefaultPIDIndex,Config.k_P[index], Config.kDefaultTimeout);
+      m_driveController.config_kI(Config.kDefaultPIDIndex,Config.k_I[index], Config.kDefaultTimeout);
+      m_driveController.config_kD(Config.kDefaultPIDIndex,Config.k_D[index], Config.kDefaultTimeout);
+      m_driveController.configMotionCruiseVelocity(Config.CruiseVelocity[index], Config.kDefaultTimeout);
+      m_driveController.configMotionAcceleration(Config.Acceleration[index], Config.kDefaultTimeout);
 
 
       // This is the second controller, we ALWAYS want it to mirror the drive controller
@@ -188,6 +212,14 @@ public class Drive extends Subsystem{
       m_driveController.set(ControlMode.PercentOutput, m_direction * speed);
 	  
     }
+	
+	public void setDrive(int val) {
+		m_driveController.set(ControlMode.MotionMagic, m_direction * val);
+	}
+	
+	public void resetDriveEncoder() {
+		m_driveController.setSelectedSensorPosition(0,0,0);
+	}
 
     // tell the module to steer to an angle, incorporates offset
     // Mode should be either MotionMagic or Position, others will have undefined behavior
