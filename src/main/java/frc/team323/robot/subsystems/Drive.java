@@ -96,11 +96,11 @@ public class Drive extends Subsystem{
       angles[i] = (Math.toDegrees(Math.atan2(-w_x, -w_y))) % 360;
 
 	  SmartDashboard.putNumber("WheelHeading " + _sb.append(i), angles[i]);
-	  
+
 	  //System.out.print(angles[i]);
       i++;
 
-	  
+
 
     }
     i = 0;
@@ -127,24 +127,41 @@ public class Drive extends Subsystem{
       m_wheelModules[i].setSpeedAndAngle(0, angles[i]);
     }
   }
-  
+
   public void setDrive(int val) {
 	for(int i = 0; i < m_wheelModules.length; i++) {
 		m_wheelModules[i].setDrive(val);
 	}
 }
-  
+
   public void setDrive(int[] values) {
-	for(int i = 0; i < values.length; i++) {
-		m_wheelModules[i].setDrive(values[i]);
-	}	
+  	for(int i = 0; i < values.length; i++) {
+  		m_wheelModules[i].setDrive(values[i]);
+  	}
   }
-  
+
   public void resetDriveEncoders() {
-	for(int i = 0; i < m_wheelModules.length;  i++){
-		m_wheelModules[i].resetDriveEncoder();
-	}
-}
+  	for(int i = 0; i < m_wheelModules.length;  i++){
+  		m_wheelModules[i].resetDriveEncoder();
+  	}
+  }
+
+  public int[] getDriveError() {
+    int error[] = new int[m_wheelModules.length];
+    for(int i = 0; i < m_wheelModules.length;  i++){
+      error[i] = m_wheelModules[i].getDriveError();
+    }
+    return error;
+  }
+
+  public int[] getSteeringError() {
+    int error[] = new int[m_wheelModules.length];
+    for(int i = 0; i < m_wheelModules.length;  i++){
+      error[i] = m_wheelModules[i].getSteeringError();
+    }
+    return error;
+  }
+
 
   // Wrapper class to hold the implementation details of the Module
   private class WheelModule {
@@ -210,16 +227,24 @@ public class Drive extends Subsystem{
     // Set open loop speed
     public void setSpeed(double speed){
       m_driveController.set(ControlMode.PercentOutput, m_direction * speed);
-	  
+
     }
-	
+
 	public void setDrive(int val) {
 		m_driveController.set(ControlMode.MotionMagic, m_direction * val);
 	}
-	
+
 	public void resetDriveEncoder() {
 		m_driveController.setSelectedSensorPosition(0,0,0);
 	}
+
+  public int getDriveError() {
+    return m_driveController.getClosedLoopError(0);
+  }
+
+  public int getSteeringError() {
+    return m_steeringController.getClosedLoopError(0);
+  }
 
     // tell the module to steer to an angle, incorporates offset
     // Mode should be either MotionMagic or Position, others will have undefined behavior

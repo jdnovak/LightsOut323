@@ -23,7 +23,12 @@ public class DriveDistance extends Command {
   }
 
   public boolean isFinished() {
-    return false;
+    boolean atDistance = true;
+    int[] errors = Robot.drivetrain.getDriveError();
+    for (int error : errors) {
+      atDistance = error < 50 && atDistance;
+    }
+    return atDistance;
   }
 
   public void end(){}
