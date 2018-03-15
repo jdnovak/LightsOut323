@@ -10,7 +10,7 @@ public class Launch extends CommandGroup {
       return;
     }
     addSequential(new DisengageBrake());
-    addSequential(new DisengageLatch());
+    addParallel(new DisengageLatch());
   }
 
   public void end() {
