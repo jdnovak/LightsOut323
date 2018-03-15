@@ -6,12 +6,12 @@ import frc.team323.robot.Robot;
 
 public class MoveTo extends Command {
 
-  int target = 0;
+  int k_target = 0;
 
   public MoveTo(int target) {
     super(2.5);
     requires(Robot.launcher);
-    this.target = target;
+    k_target = target;
   }
 
   public void initialize() {
@@ -19,7 +19,7 @@ public class MoveTo extends Command {
   }
 
   public void execute() {
-    Robot.launcher.moveWinch(draw);
+    Robot.launcher.moveWinch(k_target);
   }
 
   public boolean isFinished() {
@@ -28,8 +28,5 @@ public class MoveTo extends Command {
 
   public void end(){}
   public void interrupted() {}
-  // Because this task requires the brake to fire we can't interrupt it
-  public boolean isInterruptible() {
-    return false;
-  }
+
 }

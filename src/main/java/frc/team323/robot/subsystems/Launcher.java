@@ -22,8 +22,11 @@ public class Launcher extends Subsystem{
   private DigitalInput k_homeSwitch;
   private TalonSRX k_master;
   private VictorSPX k_slave;
+  // Normally things are all private to be encapsulated, this is used as an example of public stuff.
+  public boolean isCocked;
 
   public Launcher() {
+    isCocked = false;
     k_trigger = new Solenoid(0);
     k_shifter = new Solenoid(1);
     k_brake = new Solenoid(2);
@@ -102,7 +105,7 @@ public class Launcher extends Subsystem{
     k_master.set(ControlMode.PercentOutput, val);
   }
 
-  public void moveWinch(int target, int profile) {
+  public void moveWinch(int target) {
     k_brake.set(false);
     // We switch how we move based on if trigger is set
     k_master.selectProfileSlot((k_trigger.get()? 1: 0), 0);

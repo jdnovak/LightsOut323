@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
 	//if(Robot.oi.driverController.getRawButton(5))
 	//	shifter.set(false);
 	//else
-		shifter.set(true);
+		// shifter.set(true);
 
 	//if(Robot.oi.driverController.getRawButton(9))
 	//	closePickups.set(true);
@@ -142,189 +142,189 @@ public class Robot extends TimedRobot {
 	//	extendPickups.set(false);
 
 		// Tilting of elevator by A, B, Y buttons
-	if(Robot.oi.operatorController.getRawButton(1)) {
-		Config.tiltForward = false;
-		Config.tiltUp = false;
-		Config.tiltBack = true;
-		}
-
-	else if(Robot.oi.operatorController.getRawButton(2)) {
-		Config.tiltForward = false;
-		Config.tiltUp = true;
-		Config.tiltBack = false;
-	}
-
-	else if(Robot.oi.operatorController.getRawButton(4)) {
-		Config.tiltForward = true;
-		Config.tiltUp = false;
-		Config.tiltBack = false;
-	}
-
-
-		// Operator Cube Pickup Sequence
-		if (Robot.oi.operatorController.getRawButton(6) && !Config.pickupOS) {
-		 	 Config.tiltForward = true;
-			 Config.tiltUp = false;
-			 Config.tiltBack = false;
-			 Config.extendPickupsToggle = true;
-			 Config.closePickupsToggle = false;
-			 Config.pickupOS = true;
-			 Config.notpickupOS = false;
-		}
-		double rightTrigger = Robot.oi.operatorController.getRawAxis(3);
-		if(rightTrigger > 0.1 && Config.pickupOS && !Config.notpickupOS) {
-			Config.tiltForward = false;
-			Config.tiltUp = false;
-			 Config.tiltBack = true;
-			Config.extendPickupsToggle = false;
-			Config.closePickupsToggle = false;
-			Config.notpickupOS = true;
-			Config.pickupOS = false;
-		}
-
-			// Toggle Pickup Close/ Open
-		if(Robot.oi.operatorController.getRawButton(3) &! Config.pickupToggleOS) {
-			if (Config.closePickupsToggle)
-				Config.closePickupsToggle = false;
-			else if (!Config.closePickupsToggle)
-				Config.closePickupsToggle = true;
-			Config.pickupToggleOS =true;
-			}
-		if(!Robot.oi.operatorController.getRawButton(3) && Config.pickupToggleOS)
-			Config.pickupToggleOS = false;
-
-
-			// Run intake wheels in and out
-			if (Robot.oi.driverController.getTrigger())
-				pickupWheels.set(ControlMode.PercentOutput,1.0);
-			else {
-			double wheelSpeed = Robot.oi.operatorController.getRawAxis(5) ;
-			pickupWheels.set(ControlMode.PercentOutput,wheelSpeed);
-			}
-
-		// Code for Winch control
-
-		// Home Routine -- Run winch down to bottom, set trigger, and zero position
-		if(Robot.oi.operatorController.getRawButton(7)) {
-			Config.triggerClosed = false;
-				if(homeSwitch.get())
-				winchMaster.set(ControlMode.PercentOutput, -.1);
-				else {
-				winchMaster.set(ControlMode.PercentOutput, 0);
-				Config.triggerClosed = true;
-				winchMaster.setSelectedSensorPosition(0, 0, 10);
-				winchMaster.setSelectedSensorPosition(0, 1, 10);
-				}
-			}
-
-			// Zero Winch Encoder
-			if(Robot.oi.driverController.getRawButton(12))
-				winchMaster.setSelectedSensorPosition(0, 0, 10);
-
-			//	Manual Winch Override
-			double winchSpeed = Robot.oi.operatorController.getRawAxis(1);
-		if( Robot.oi.operatorController.getRawButton(5)) {
-				winchMaster.selectProfileSlot(0,0);
-				winchMaster.set(ControlMode.PercentOutput, winchSpeed * .8);
-			}
-
-			// Run Elevator mode of Launchivator
-			double leftTrigger = Robot.oi.operatorController.getRawAxis(2);
-			if(leftTrigger > .8){
-			Config.triggerClosed = false;
-				winchMaster.selectProfileSlot(0,0);
-				winchMaster.set(ControlMode.MotionMagic, 11500);
-			}
-			if(leftTrigger > .2 && leftTrigger < .8){
-			Config.triggerClosed = false;
-				winchMaster.selectProfileSlot(0,0);
-				winchMaster.set(ControlMode.MotionMagic, 0);
-			}
-
-			//	Run Launch Mode of Launchivator
-			if(Robot.oi.operatorController.getPOV() == 0) {
-				if(!homeSwitch.get() && Config.launchSequence == 0) {
-					Config.triggerClosed = true;
-					Config.launchSequence = 1;
-					}
-				if(Config.launchSequence == 1) {
-					launchTimer.reset();
-					launchTimer.start();
-					winchMaster.selectProfileSlot(1,0);
-					winchSetPoint = 9800;
-					winchMaster.set(ControlMode.Position, winchSetPoint);
-					Config.launchSequence = 2;
-					}
-				if(Config.launchSequence == 2 && launchTimer.get() > 2) {
-					Config.lockBrake = true;
-					Config.launchSequence = 3;
-					}
-				if(Config.launchSequence == 3 && launchTimer.get() > 2.5) {
-					winchMaster.set(ControlMode.PercentOutput, 0);
-					}
-			}
-			else if(Config.launchSequence > 0) {
-					Config.launchSequence = 0;
-					winchMaster.set(ControlMode.PercentOutput, 0);
-					Config.lockBrake = false;
-
-			}
-
-
-
-
-
-		// Winch Brake control
-		double motorVelocity = winchMaster.getSelectedSensorVelocity(0);
-		double motorOutput = winchMaster.getMotorOutputPercent();
-		if( motorOutput < -.05 || motorOutput > .05 && !Config.lockBrake )
-			brake.set(true);
-		else
-			brake.set(false);
-
-		// Elevator Tilt commands
-		if(Config.tiltBack)	{
-			elevatorBack.set(DoubleSolenoid.Value.kReverse);
-			elevatorForward.set(DoubleSolenoid.Value.kReverse);
-			}
-		if(Config.tiltUp)	{
-			elevatorBack.set(DoubleSolenoid.Value.kForward);
-			elevatorForward.set(DoubleSolenoid.Value.kReverse);
-			}
-
-		if(Config.tiltForward)	{
-			elevatorBack.set(DoubleSolenoid.Value.kForward);
-			elevatorForward.set(DoubleSolenoid.Value.kForward);
-			}
-
-		if(Config.closePickupsToggle)
-			closePickups.set(false);
-		else
-			closePickups.set(true);
-
-		if(Config.extendPickupsToggle)
-			extendPickups.set(true);
-		else
-			extendPickups.set(false);
-
-		if(Config.triggerClosed)
-		trigger.set(false);
-	else
-		trigger.set(true);
-
-
-
-		SmartDashboard.putNumber("Winch Position", winchMaster.getSelectedSensorPosition(0));
-		SmartDashboard.putNumber("Winch Position Error", winchMaster.getClosedLoopError(0));
-		SmartDashboard.putNumber("Winch SetPoint", winchSetPoint);
-		SmartDashboard.putNumber("Winch Velocity", winchMaster.getSelectedSensorVelocity(0));
-		SmartDashboard.putNumber("WinchMaster Amps", pdp.getCurrent(1));
-		SmartDashboard.putNumber("WinchSlave Amps", pdp.getCurrent(1));
-		SmartDashboard.putBoolean("Home Switch", !homeSwitch.get());
-		SmartDashboard.putBoolean("TriggerClosed", Config.triggerClosed);
-		SmartDashboard.putBoolean("BrakeLock", Config.lockBrake);
-		SmartDashboard.putNumber("POV", Robot.oi.operatorController.getPOV());
-		SmartDashboard.putNumber("LeftTrigger", leftTrigger);
+	// if(Robot.oi.operatorController.getRawButton(1)) {
+	// 	Config.tiltForward = false;
+	// 	Config.tiltUp = false;
+	// 	Config.tiltBack = true;
+	// 	}
+  //
+	// else if(Robot.oi.operatorController.getRawButton(2)) {
+	// 	Config.tiltForward = false;
+	// 	Config.tiltUp = true;
+	// 	Config.tiltBack = false;
+	// }
+  //
+	// else if(Robot.oi.operatorController.getRawButton(4)) {
+	// 	Config.tiltForward = true;
+	// 	Config.tiltUp = false;
+	// 	Config.tiltBack = false;
+	// }
+  //
+  //
+	// 	// Operator Cube Pickup Sequence
+	// 	if (Robot.oi.operatorController.getRawButton(6) && !Config.pickupOS) {
+	// 	 	 Config.tiltForward = true;
+	// 		 Config.tiltUp = false;
+	// 		 Config.tiltBack = false;
+	// 		 Config.extendPickupsToggle = true;
+	// 		 Config.closePickupsToggle = false;
+	// 		 Config.pickupOS = true;
+	// 		 Config.notpickupOS = false;
+	// 	}
+	// 	double rightTrigger = Robot.oi.operatorController.getRawAxis(3);
+	// 	if(rightTrigger > 0.1 && Config.pickupOS && !Config.notpickupOS) {
+	// 		Config.tiltForward = false;
+	// 		Config.tiltUp = false;
+	// 		 Config.tiltBack = true;
+	// 		Config.extendPickupsToggle = false;
+	// 		Config.closePickupsToggle = false;
+	// 		Config.notpickupOS = true;
+	// 		Config.pickupOS = false;
+	// 	}
+  //
+	// 		// Toggle Pickup Close/ Open
+	// 	if(Robot.oi.operatorController.getRawButton(3) &! Config.pickupToggleOS) {
+	// 		if (Config.closePickupsToggle)
+	// 			Config.closePickupsToggle = false;
+	// 		else if (!Config.closePickupsToggle)
+	// 			Config.closePickupsToggle = true;
+	// 		Config.pickupToggleOS =true;
+	// 		}
+	// 	if(!Robot.oi.operatorController.getRawButton(3) && Config.pickupToggleOS)
+	// 		Config.pickupToggleOS = false;
+  //
+  //
+	// 		// Run intake wheels in and out
+	// 		if (Robot.oi.driverController.getTrigger())
+	// 			pickupWheels.set(ControlMode.PercentOutput,1.0);
+	// 		else {
+	// 		double wheelSpeed = Robot.oi.operatorController.getRawAxis(5) ;
+	// 		pickupWheels.set(ControlMode.PercentOutput,wheelSpeed);
+	// 		}
+  //
+	// 	// Code for Winch control
+  //
+	// 	// Home Routine -- Run winch down to bottom, set trigger, and zero position
+	// 	if(Robot.oi.operatorController.getRawButton(7)) {
+	// 		Config.triggerClosed = false;
+	// 			if(homeSwitch.get())
+	// 			winchMaster.set(ControlMode.PercentOutput, -.1);
+	// 			else {
+	// 			winchMaster.set(ControlMode.PercentOutput, 0);
+	// 			Config.triggerClosed = true;
+	// 			winchMaster.setSelectedSensorPosition(0, 0, 10);
+	// 			winchMaster.setSelectedSensorPosition(0, 1, 10);
+	// 			}
+	// 		}
+  //
+	// 		// Zero Winch Encoder
+	// 		if(Robot.oi.driverController.getRawButton(12))
+	// 			winchMaster.setSelectedSensorPosition(0, 0, 10);
+  //
+	// 		//	Manual Winch Override
+	// 		double winchSpeed = Robot.oi.operatorController.getRawAxis(1);
+	// 	if( Robot.oi.operatorController.getRawButton(5)) {
+	// 			winchMaster.selectProfileSlot(0,0);
+	// 			winchMaster.set(ControlMode.PercentOutput, winchSpeed * .8);
+	// 		}
+  //
+	// 		// Run Elevator mode of Launchivator
+	// 		double leftTrigger = Robot.oi.operatorController.getRawAxis(2);
+	// 		if(leftTrigger > .8){
+	// 		Config.triggerClosed = false;
+	// 			winchMaster.selectProfileSlot(0,0);
+	// 			winchMaster.set(ControlMode.MotionMagic, 11500);
+	// 		}
+	// 		if(leftTrigger > .2 && leftTrigger < .8){
+	// 		Config.triggerClosed = false;
+	// 			winchMaster.selectProfileSlot(0,0);
+	// 			winchMaster.set(ControlMode.MotionMagic, 0);
+	// 		}
+  //
+	// 		//	Run Launch Mode of Launchivator
+	// 		if(Robot.oi.operatorController.getPOV() == 0) {
+	// 			if(!homeSwitch.get() && Config.launchSequence == 0) {
+	// 				Config.triggerClosed = true;
+	// 				Config.launchSequence = 1;
+	// 				}
+	// 			if(Config.launchSequence == 1) {
+	// 				launchTimer.reset();
+	// 				launchTimer.start();
+	// 				winchMaster.selectProfileSlot(1,0);
+	// 				winchSetPoint = 9800;
+	// 				winchMaster.set(ControlMode.Position, winchSetPoint);
+	// 				Config.launchSequence = 2;
+	// 				}
+	// 			if(Config.launchSequence == 2 && launchTimer.get() > 2) {
+	// 				Config.lockBrake = true;
+	// 				Config.launchSequence = 3;
+	// 				}
+	// 			if(Config.launchSequence == 3 && launchTimer.get() > 2.5) {
+	// 				winchMaster.set(ControlMode.PercentOutput, 0);
+	// 				}
+	// 		}
+	// 		else if(Config.launchSequence > 0) {
+	// 				Config.launchSequence = 0;
+	// 				winchMaster.set(ControlMode.PercentOutput, 0);
+	// 				Config.lockBrake = false;
+  //
+	// 		}
+  //
+  //
+  //
+  //
+  //
+	// 	// Winch Brake control
+	// 	double motorVelocity = winchMaster.getSelectedSensorVelocity(0);
+	// 	double motorOutput = winchMaster.getMotorOutputPercent();
+	// 	if( motorOutput < -.05 || motorOutput > .05 && !Config.lockBrake )
+	// 		brake.set(true);
+	// 	else
+	// 		brake.set(false);
+  //
+	// 	// Elevator Tilt commands
+	// 	if(Config.tiltBack)	{
+	// 		elevatorBack.set(DoubleSolenoid.Value.kReverse);
+	// 		elevatorForward.set(DoubleSolenoid.Value.kReverse);
+	// 		}
+	// 	if(Config.tiltUp)	{
+	// 		elevatorBack.set(DoubleSolenoid.Value.kForward);
+	// 		elevatorForward.set(DoubleSolenoid.Value.kReverse);
+	// 		}
+  //
+	// 	if(Config.tiltForward)	{
+	// 		elevatorBack.set(DoubleSolenoid.Value.kForward);
+	// 		elevatorForward.set(DoubleSolenoid.Value.kForward);
+	// 		}
+  //
+	// 	if(Config.closePickupsToggle)
+	// 		closePickups.set(false);
+	// 	else
+	// 		closePickups.set(true);
+  //
+	// 	if(Config.extendPickupsToggle)
+	// 		extendPickups.set(true);
+	// 	else
+	// 		extendPickups.set(false);
+  //
+	// 	if(Config.triggerClosed)
+	// 	trigger.set(false);
+	// else
+	// 	trigger.set(true);
+  //
+  //
+  //
+	// 	SmartDashboard.putNumber("Winch Position", winchMaster.getSelectedSensorPosition(0));
+	// 	SmartDashboard.putNumber("Winch Position Error", winchMaster.getClosedLoopError(0));
+	// 	SmartDashboard.putNumber("Winch SetPoint", winchSetPoint);
+	// 	SmartDashboard.putNumber("Winch Velocity", winchMaster.getSelectedSensorVelocity(0));
+	// 	SmartDashboard.putNumber("WinchMaster Amps", pdp.getCurrent(1));
+	// 	SmartDashboard.putNumber("WinchSlave Amps", pdp.getCurrent(1));
+	// 	SmartDashboard.putBoolean("Home Switch", !homeSwitch.get());
+	// 	SmartDashboard.putBoolean("TriggerClosed", Config.triggerClosed);
+	// 	SmartDashboard.putBoolean("BrakeLock", Config.lockBrake);
+	// 	SmartDashboard.putNumber("POV", Robot.oi.operatorController.getPOV());
+	// 	SmartDashboard.putNumber("LeftTrigger", leftTrigger);
 
     }
 

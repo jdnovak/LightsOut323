@@ -15,6 +15,7 @@ public class Brake extends Command {
   }
 
   public void execute() {
+    Robot.launcher.moveWinchOpenLoop(0);
     Robot.launcher.engageBrake();
   }
 
