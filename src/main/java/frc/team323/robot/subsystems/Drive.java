@@ -203,12 +203,12 @@ public class Drive extends Subsystem{
 
       m_driveController = new TalonSRX(driveId);
       m_driveController.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Config.kDefaultPIDIndex, Config.kDefaultTimeout);
-	  m_driveController.config_kF(Config.kDefaultPIDIndex,Config.k_F[index], Config.kDefaultTimeout);
-      m_driveController.config_kP(Config.kDefaultPIDIndex,Config.k_P[index], Config.kDefaultTimeout);
-      m_driveController.config_kI(Config.kDefaultPIDIndex,Config.k_I[index], Config.kDefaultTimeout);
-      m_driveController.config_kD(Config.kDefaultPIDIndex,Config.k_D[index], Config.kDefaultTimeout);
-      m_driveController.configMotionCruiseVelocity(Config.CruiseVelocity[index], Config.kDefaultTimeout);
-      m_driveController.configMotionAcceleration(Config.Acceleration[index], Config.kDefaultTimeout);
+  	  m_driveController.config_kF(Config.kDefaultPIDIndex,Config.Drive_k_F[index], Config.kDefaultTimeout);
+      m_driveController.config_kP(Config.kDefaultPIDIndex,Config.Drive_k_P[index], Config.kDefaultTimeout);
+      m_driveController.config_kI(Config.kDefaultPIDIndex,Config.Drive_k_I[index], Config.kDefaultTimeout);
+      m_driveController.config_kD(Config.kDefaultPIDIndex,Config.Drive_k_D[index], Config.kDefaultTimeout);
+      m_driveController.configMotionCruiseVelocity(Config.Drive_CruiseVelocity[index], Config.kDefaultTimeout);
+      m_driveController.configMotionAcceleration(Config.Drive_Acceleration[index], Config.kDefaultTimeout);
 
 
       // This is the second controller, we ALWAYS want it to mirror the drive controller
