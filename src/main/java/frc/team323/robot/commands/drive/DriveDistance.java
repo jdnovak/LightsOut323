@@ -15,6 +15,7 @@ public class DriveDistance extends Command {
   }
 
   public void initialize() {
+    Robot.drivetrain.resetDriveEncoders();
 
   }
 
