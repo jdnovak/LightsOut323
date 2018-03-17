@@ -18,8 +18,8 @@ public class Config {
   public static double kFrontLeftDrive_k_I = 0.0;
   public static double kFrontLeftDrive_k_D = 0.0;
   public static double kFrontLeftDrive_k_F = 0.5;
-  public static int kFrontLeftDrive_CruiseVelocity = 1000;
-  public static int kFrontLeftDrive_Acceleration = 500;
+  public static int kFrontLeftDrive_CruiseVelocity = 10000;
+  public static int kFrontLeftDrive_Acceleration = 2500;
   public static int kFrontLeftSlaveId = 3;
   public static int kFrontLeftOffset = 1483;
   public static double kFrontLeftSteer_k_P = 5.0;
@@ -35,8 +35,8 @@ public class Config {
   public static double kFrontRightDrive_k_I = 0.0;
   public static double kFrontRightDrive_k_D = 0.0;
   public static double kFrontRightDrive_k_F = 0.5;
-  public static int kFrontRightDrive_CruiseVelocity = 1000;
-  public static int kFrontRightDrive_Acceleration = 500;
+  public static int kFrontRightDrive_CruiseVelocity = 10000;
+  public static int kFrontRightDrive_Acceleration = 2500;
   public static int kFrontRightSlaveId = 6;
   public static int kFrontRightOffset = -190;
   public static double kFrontRightSteer_k_P = 5.0;
@@ -52,8 +52,8 @@ public class Config {
   public static double kBackLeftDrive_k_I = 0.0;
   public static double kBackLeftDrive_k_D = 0.0;
   public static double kBackLeftDrive_k_F = 0.5;
-  public static int kBackLeftDrive_CruiseVelocity = 1000;
-  public static int kBackLeftDrive_Acceleration = 500;
+  public static int kBackLeftDrive_CruiseVelocity = 10000;
+  public static int kBackLeftDrive_Acceleration = 2500;
   public static int kBackLeftSlaveId = 9;
   public static int kBackLeftOffset = -1209;
   public static double kBackLeftSteer_k_P = 5.0;
@@ -69,8 +69,8 @@ public class Config {
   public static double kBackRightDrive_k_I = 0.0;
   public static double kBackRightDrive_k_D = 0.0;
   public static double kBackRightDrive_k_F = 0.5;
-  public static int kBackRightDrive_CruiseVelocity = 1000;
-  public static int kBackRightDrive_Acceleration = 500;
+  public static int kBackRightDrive_CruiseVelocity = 10000;
+  public static int kBackRightDrive_Acceleration = 2500;
   public static int kBackRightSlaveId = 12;
   public static int kBackRightOffset = 36;
   public static double kBackRightSteer_k_P = 5.0;

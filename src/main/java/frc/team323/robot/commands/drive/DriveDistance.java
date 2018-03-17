@@ -10,7 +10,7 @@ public class DriveDistance extends Command {
   public int m_distance;
   public DriveDistance(double distance) {
     requires(Robot.drivetrain);
-    double rotations = distance/4.0 * Math.PI;
+    double rotations = distance/ (4.0 * Math.PI);
     m_distance = (int) ((35.0/18.0) * rotations) * 4096;
   }
 
