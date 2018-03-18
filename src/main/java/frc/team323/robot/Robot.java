@@ -135,8 +135,10 @@ public class Robot extends TimedRobot {
 		
 		
 	// Driver Fire Button 							Needs more tests to make safe
-	if(Robot.oi.driverController.getRawButton(3))
+	if(Robot.oi.driverController.getRawButton(3)) {
+		Config.closePickupsToggle = false;
 		Config.triggerClosed = false;
+	}	
 	
 	// Fire reset	
 	if(Robot.oi.driverController.getRawButton(5))
@@ -148,15 +150,7 @@ public class Robot extends TimedRobot {
 	//else
 		shifter.set(false);
 		
-	//if(Robot.oi.driverController.getRawButton(9))
-	//	closePickups.set(true);
-	//else
-	//	closePickups.set(false);
-		
-	//if(Robot.oi.driverController.getRawButton(10))
-	//	extendPickups.set(true);
-	//else
-	//	extendPickups.set(false);	
+	
 	
 		// Tilting of elevator by A, B, Y buttons
 	if(Robot.oi.operatorController.getRawButton(1)) {
@@ -223,11 +217,11 @@ public class Robot extends TimedRobot {
 			cubeHolddown.set(false);
 			
 			// Run intake wheels in and out 
+			double pickupWheelSpeed = Robot.oi.operatorController.getRawAxis(5);
 			if (Robot.oi.driverController.getTrigger())
 				pickupWheels.set(ControlMode.PercentOutput,1.0);
-			else {	
-			double wheelSpeed = Robot.oi.operatorController.getRawAxis(5) ;
-			pickupWheels.set(ControlMode.PercentOutput,wheelSpeed);
+			else if(Robot.oi.operatorController.getPOV() != 0) {	
+			pickupWheels.set(ControlMode.PercentOutput,pickupWheelSpeed);
 			}	
 	
 		// Code for Winch control
@@ -274,12 +268,15 @@ public class Robot extends TimedRobot {
 			//	Run Launch Mode of Launchivator
 			if(Robot.oi.operatorController.getPOV() == 0) { 
 				if(Config.launchSequence ==0){
-				Config.closePickupsToggle = false;
+				Config.closePickupsToggle = true;
+				Config.extendPickupsToggle = true;
+				pickupWheels.set(ControlMode.PercentOutput, 0.9);
 				winchMaster.selectProfileSlot(0,0);	
 				winchMaster.set(ControlMode.MotionMagic, 0);
 				}
 				if(!homeSwitch.get() && Config.launchSequence == 0) {
 					Config.triggerClosed = true;
+					pickupWheels.set(ControlMode.PercentOutput, 0);
 					Config.launchSequence = 1;
 					}
 				if(Config.launchSequence == 1) {	
@@ -360,6 +357,12 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putBoolean("BrakeLock", Config.lockBrake);
 		
 		SmartDashboard.putNumber("Heading",Robot.drivetrain.getHeading());
+		
+		// Practice robot config. Channels must be changed to match the competition robot	
+		SmartDashboard.putNumber("LF DriveMotor", pdp.getCurrent(12));
+		SmartDashboard.putNumber("RF DriveMotor", pdp.getCurrent(3));
+		SmartDashboard.putNumber("LR DriveMotor", pdp.getCurrent(14));
+		SmartDashboard.putNumber("RR DriveMotor", pdp.getCurrent(1));
 		
 		
 		//SmartDashboard.putNumber("POV", Robot.oi.operatorController.getPOV());

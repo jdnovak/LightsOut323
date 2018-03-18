@@ -56,7 +56,14 @@ public class Drive extends Subsystem{
 
   // Set velocities
   public void driveVelocity(double X, double Y, double Theta, ControlMode mode){
-
+  
+	if (X > -.02 && X < .02)
+		X = 0;
+	if (Y > -.02 && Y < .02)
+		Y = 0;
+	if (Theta > -.02 && Theta < .02)
+		Theta = 0;
+	
 	StringBuilder _sb = new StringBuilder();
     double[] velocities = new double[m_wheelModules.length];
     double[] angles = new double[m_wheelModules.length];
@@ -96,6 +103,7 @@ public class Drive extends Subsystem{
       angles[i] = (Math.toDegrees(Math.atan2(-w_x, -w_y))) % 360;
 
 	  SmartDashboard.putNumber("WheelHeading " + _sb.append(i), angles[i]);
+	  
 	  
 	  //System.out.print(angles[i]);
       i++;
@@ -193,7 +201,6 @@ public class Drive extends Subsystem{
     // Mode should be either MotionMagic or Position, others will have undefined behavior
     public void setAngle(double angle, ControlMode mode){
         double value = 4096 * (angle/360.0);
-		SmartDashboard.putNumber("SteeringValue", value);
 		m_steeringController.set(mode, (int)value);
     }
 
