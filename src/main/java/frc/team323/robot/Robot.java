@@ -132,6 +132,10 @@ public class Robot extends TimedRobot {
 		}
 		else {
   		Robot.drivetrain.driveVelocity(0,0,0);
+      if(fieldState != null && runSwitchAuto){
+        elevatorBack.set(DoubleSolenoid.Value.kForward);
+  			elevatorForward.set(DoubleSolenoid.Value.kForward);
+      }
 		}
     }
 
