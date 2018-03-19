@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -122,10 +123,10 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
       Scheduler.getInstance().run();
 
-	  if(autonTimer.get() < 3.0) {
+	  if(autonTimer.get() < 4) {
       double slide = 0;
       if(fieldState != null && runSwitchAuto){
-        slide = fieldState.charAt(0) == 'R' ? .4 : -.4;
+        slide = fieldState.charAt(0) == 'R' ? -.22 : .22;
       }
       Vector2d adjustedInput = SwerveUtils.TransformFieldCentric(slide, -0.4, Robot.drivetrain.getHeading());
       Robot.drivetrain.driveVelocity(adjustedInput.x, adjustedInput.y, 0 ,ControlMode.PercentOutput);
@@ -134,7 +135,7 @@ public class Robot extends TimedRobot {
   		Robot.drivetrain.driveVelocity(0,0,0);
       if(fieldState != null && runSwitchAuto){
         elevatorBack.set(DoubleSolenoid.Value.kForward);
-  			elevatorForward.set(DoubleSolenoid.Value.kForward);
+  		elevatorForward.set(DoubleSolenoid.Value.kForward);
       }
 		}
     }
@@ -359,8 +360,14 @@ public class Robot extends TimedRobot {
 
 		if(Config.triggerClosed)
 		trigger.set(false);
-	else
+		else
 		trigger.set(true);
+		
+		if(Config.closePickupsToggle && Config.extendPickupsToggle) 	
+			Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, .5);
+		else
+			Robot.oi.operatorController.setRumble(RumbleType.kLeftRumble, 0);	
+		
 
 
 
@@ -375,6 +382,10 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putBoolean("BrakeLock", Config.lockBrake);
 
 		SmartDashboard.putNumber("Heading",Robot.drivetrain.getHeading());
+		SmartDashboard.putNumber("X",Robot.oi.driverController.getX());
+		SmartDashboard.putNumber("Y",Robot.oi.driverController.getY());
+		SmartDashboard.putNumber("Theta",Robot.oi.thetaController.getX());
+		
 
 		// Practice robot config. Channels must be changed to match the competition robot
 		SmartDashboard.putNumber("LF DriveMotor", pdp.getCurrent(12));
