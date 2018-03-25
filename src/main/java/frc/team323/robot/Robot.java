@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -27,6 +28,16 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
 
 
 public class Robot extends TimedRobot {
+	private static final String kDefaultAuto = "Drive Forward";
+	private static final String kMiddleSwitchAuto = "Middle Switch";
+	private static final String kSameSideScaleAuto = "Same Side Scale";
+	private String m_autoSelected;
+	private SendableChooser<String> autoChooser;
+	
+	double cockWinchSetPoint = 8500;
+	double zeroWinchSetPoint = 0;
+	double winchSetPoint = 0;
+	
     public static final Drive drivetrain = new Drive(Config.wheelPos, Config.offsets);
     public static final OI oi = new OI();
 
@@ -52,6 +63,12 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+    autoChooser = new SendableChooser<>();
+    autoChooser.addDefault("Drive Forward", kDefaultAuto);
+    autoChooser.addObject("Middle Switch", kMiddleSwitchAuto);
+//    autoChooser.addObject("Scale Test (do not use)", kSameSideScaleAuto);
+    SmartDashboard.putData("Auto choices", autoChooser);
+    	
 	winchMaster.setNeutralMode(NeutralMode.Brake);
 	winchSlave.setNeutralMode(NeutralMode.Brake);
 	winchSlave.follow(winchMaster);
@@ -86,11 +103,16 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+    	m_autoSelected = autoChooser.getSelected();
+		// m_autoSelected = SmartDashboard.getString("Auto Selector",
+		// 		kDefaultAuto);
+		System.out.println("Auto selected: " + m_autoSelected);
     	autonTimer.reset();
     	autonTimer.start();
       fieldState = DriverStation.getInstance().getGameSpecificMessage();
 	// Offset Winch Encoder for up position
 			winchMaster.setSelectedSensorPosition(11800, 0, 10);
+		
 	}
 
     @Override
@@ -115,38 +137,134 @@ public class Robot extends TimedRobot {
 	  // zero Gyro Heading
 	if(Robot.oi.driverController.getRawButton(6))
 		Robot.drivetrain.zeroheading();
-
-
     }
 
     @Override
     public void autonomousPeriodic() {
-      Scheduler.getInstance().run();
-
-	  if(autonTimer.get() < 4) {
-      double slide = 0;
-      if(fieldState != null && runSwitchAuto){
-        slide = fieldState.charAt(0) == 'R' ? -.22 : .22;
-      }
-      Vector2d adjustedInput = SwerveUtils.TransformFieldCentric(slide, -0.4, Robot.drivetrain.getHeading());
-      Robot.drivetrain.driveVelocity(adjustedInput.x, adjustedInput.y, 0 ,ControlMode.PercentOutput);
-		}
-		else {
-  		Robot.drivetrain.driveVelocity(0,0,0);
-      if(fieldState != null && runSwitchAuto){
-        elevatorBack.set(DoubleSolenoid.Value.kForward);
-  		elevatorForward.set(DoubleSolenoid.Value.kForward);
-      }
-		}
+    	Scheduler.getInstance().run();
+    	
+    	Vector2d adjustedInput;
+        boolean readyToFire = false;
+        double k_headingCorrection_k = 0.05;
+        double headingCorrection;
+        
+    	switch (m_autoSelected) {
+    	
+    	case kSameSideScaleAuto:
+    	      //scale auto
+    	 	   //left side
+    	 	   // 270 degree offset for facing left wall
+    	 	   Robot.drivetrain.setGyroOffset(-90);
+    	 	     if(fieldState.charAt(1) == 'L')
+    	 	     {
+    	 	     	//drive to scale
+    	 	     	if(autonTimer.get() < 5)
+    	 	     	{
+    	 	     	adjustedInput = SwerveUtils.TransformFieldCentric(0, -0.4, Robot.drivetrain.getHeading());
+    	 	     	Robot.drivetrain.driveVelocity(adjustedInput.x, adjustedInput.y, 0 ,ControlMode.PercentOutput);
+    	 	     	}
+    	 	     }
+    	 	     
+    	 	     else 
+    	 	     	{
+    	 	     	//drive to switch
+    	 	     	if(autonTimer.get() < 3)
+    	 	     	{
+    	 	     	adjustedInput = SwerveUtils.TransformFieldCentric(0, -0.4, Robot.drivetrain.getHeading());
+    	 	     	Robot.drivetrain.driveVelocity(adjustedInput.x, adjustedInput.y, 0 ,ControlMode.PercentOutput);
+    	 	     	}
+    	 	    	else if(autonTimer.get() < 4.5 && fieldState.charAt(0) == 'L')
+    	 	       {
+    	 	     	adjustedInput = SwerveUtils.TransformFieldCentric(-0.3, 0, Robot.drivetrain.getHeading());
+    	 	     	Robot.drivetrain.driveVelocity(adjustedInput.x, adjustedInput.y, 0 ,ControlMode.PercentOutput);
+    	 	       }
+    	 	     }
+    	 	     
+//    	 	     //driven to position, fire if either scale or switch is on proper side
+//    	 	     if((fieldState.charAt(1) == 'L' || fieldState.charAt(0) == 'L') && autonTimer.get() > 6)
+//    	 	     {
+//    	 	     //shoot
+//    	 	     		//latch launchapult
+//    	 	     		Config.launchSequence = 0;
+//    	 	     		if(Config.launchSequence ==0){
+//    	 				Config.closePickupsToggle = true;
+//    	 				Config.extendPickupsToggle = true;
+//    	 				pickupWheels.set(ControlMode.PercentOutput, 0.9);
+//    	 				winchMaster.selectProfileSlot(0,0);
+//    	 				winchMaster.set(ControlMode.MotionMagic, 0);
+//    	 				}
+//    	 				if(!homeSwitch.get() && Config.launchSequence == 0) {
+//    	 					Config.triggerClosed = true;
+//    	 					pickupWheels.set(ControlMode.PercentOutput, 0);
+//    	 					Config.launchSequence = 1;
+//    	 					}
+//    	 				if(Config.launchSequence == 1) {
+//    	 					launchTimer.reset();
+//    	 					launchTimer.start();
+//    	 					winchMaster.selectProfileSlot(1,0);
+//    	 					winchSetPoint = 10000;
+//    	 					winchMaster.set(ControlMode.Position, winchSetPoint);
+//    	 					Config.launchSequence = 2;
+//    	 					}
+//    	 				if(Config.launchSequence == 2 && launchTimer.get() > 2) {
+//    	 					Config.lockBrake = true;
+//    	 					Config.launchSequence = 3;
+//    	 					}
+//    	 				if(Config.launchSequence == 3 && launchTimer.get() > 2.5) {
+//    	 					winchMaster.set(ControlMode.PercentOutput, 0);
+//    	 					readyToFire = true;
+//    	 					}
+//    	 				if(launchTimer.get() > 3 && readyToFire)
+//    	 				{
+////    	 					Config.launchSequence = 0;
+////    	 					winchMaster.set(ControlMode.PercentOutput, 0);
+////    	 					Config.lockBrake = false;
+//    	 					Config.triggerClosed = false;
+//    	 				}
+//    	 	     }
+    		
+    		break;
+    	
+		case kMiddleSwitchAuto:
+			// Middle switch
+			if(autonTimer.get() < 4) {
+		        double slide = 0;
+		        if(fieldState != null){
+		          slide = fieldState.charAt(0) == 'R' ? -.22 : .22;
+		        }
+		        adjustedInput = SwerveUtils.TransformFieldCentric(slide, -0.4, Robot.drivetrain.getHeading());
+		        Robot.drivetrain.driveVelocity(adjustedInput.x, adjustedInput.y, 0 ,ControlMode.PercentOutput);
+		  		}
+		  		else {
+		    		Robot.drivetrain.driveVelocity(0,0,0);
+		        if(fieldState != null){
+		          elevatorBack.set(DoubleSolenoid.Value.kForward);
+		    		elevatorForward.set(DoubleSolenoid.Value.kForward);
+		        }
+		  		}
+			break;
+		case kDefaultAuto:
+		default:
+			// Drive forward
+			if(autonTimer.get() < 4) {
+		        double slide = 0;
+		        adjustedInput = SwerveUtils.TransformFieldCentric(slide, -0.4, Robot.drivetrain.getHeading());
+		        Robot.drivetrain.driveVelocity(adjustedInput.x, adjustedInput.y, 0 ,ControlMode.PercentOutput);
+		  		}
+		  		else {
+		    		Robot.drivetrain.driveVelocity(0,0,0);
+		  		}
+			break;
+	}
     }
 
     @Override
     public void teleopPeriodic() {
       Scheduler.getInstance().run();
 
-	double cockWinchSetPoint = 8500;
-	double zeroWinchSetPoint = 0;
-	double winchSetPoint = 0;
+	cockWinchSetPoint = 8500;
+	zeroWinchSetPoint = 0;
+	winchSetPoint = 0;
 
 	// zero Gyro Heading
 	if(Robot.oi.driverController.getRawButton(6))
@@ -156,7 +274,16 @@ public class Robot extends TimedRobot {
 	// Driver Fire Button 							Needs more tests to make safe
 	if(Robot.oi.driverController.getRawButton(3)) {
 		Config.closePickupsToggle = false;
-		Config.triggerClosed = false;
+		Config.fireDelay++;
+		if(Config.fireDelay > 10)
+		{
+			Config.triggerClosed = false;	
+		}
+		
+	}
+	else
+	{
+		Config.fireDelay = 0;
 	}
 
 	// Fire reset

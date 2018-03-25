@@ -53,7 +53,14 @@ public class Drive extends Subsystem{
   public void zeroheading() {
     m_gyro.reset();
   }
-
+  
+  //NEW FOR STARTING POSITION OFFSET
+  
+  public void setGyroOffset(double offset) {
+	m_gyro.setAngleAdjustment(offset);
+  }
+  
+  
   // Set velocities
   public void driveVelocity(double X, double Y, double Theta, ControlMode mode){
   
